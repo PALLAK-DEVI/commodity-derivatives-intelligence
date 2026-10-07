@@ -1240,4 +1240,77 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // ================= 14. VIEW ROUTER (CHATGPT / DASHBOARD STYLE) =================
+  function switchView(viewId) {
+    // 1. Update Active Navigation State in Sidebar
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+      if (item.dataset.view === viewId) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+
+    // 2. Hide all views and reveal target view
+    document.querySelectorAll('.dashboard-view').forEach(view => {
+      if (view.id === viewId) {
+        view.classList.add('active-view');
+      } else {
+        view.classList.remove('active-view');
+      }
+    });
+
+    // 3. Close mobile drawer if open
+    document.querySelector('.terminal-sidebar')?.classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay')?.classList.remove('active');
+
+    // 4. Trigger Plotly resize for newly exposed containers
+    setTimeout(resizeAllCharts, 60);
+    setTimeout(resizeAllCharts, 220);
+  }
+
+  // Sidebar navigation click handlers
+  document.querySelectorAll('.sidebar-nav .nav-item').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetView = btn.dataset.view;
+      if (targetView) {
+        switchView(targetView);
+        if (history.pushState) {
+          history.pushState(null, null, '#' + targetView.replace('view-', ''));
+        }
+      }
+    });
+  });
+
+  // Desktop sidebar collapse/expand toggle
+  const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+  btnToggleSidebar?.addEventListener('click', () => {
+    document.querySelector('.terminal-shell')?.classList.toggle('sidebar-collapsed');
+    setTimeout(resizeAllCharts, 200);
+  });
+
+  // Mobile menu drawer toggle
+  const btnMobileMenu = document.getElementById('btnMobileMenu');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  
+  btnMobileMenu?.addEventListener('click', () => {
+    document.querySelector('.terminal-sidebar')?.classList.toggle('mobile-open');
+    sidebarOverlay?.classList.toggle('active');
+  });
+
+  sidebarOverlay?.addEventListener('click', () => {
+    document.querySelector('.terminal-sidebar')?.classList.remove('mobile-open');
+    sidebarOverlay?.classList.remove('active');
+  });
+
+  // URL Hash-based view activation on page load
+  if (window.location.hash) {
+    const rawHash = window.location.hash.replace('#', '');
+    const hashView = 'view-' + rawHash;
+    if (document.getElementById(hashView)) {
+      switchView(hashView);
+    }
+  }
 });

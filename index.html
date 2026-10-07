@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Commodity Derivatives Intelligence | MCX Gold Relative Value Terminal</title>
+  <title>Commodity Derivatives Intelligence | MCX Gold Quant Terminal</title>
   
   <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,10 +23,17 @@
 <body>
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
   <!-- Terminal Top Header Bar -->
   <header class="terminal-topbar">
     <div class="topbar-left">
+      <button id="btnMobileMenu" class="btn-topbar-icon mobile-only" title="Open Navigation Menu">
+        <i data-lucide="menu"></i>
+      </button>
+      <button id="btnToggleSidebar" class="btn-topbar-icon desktop-only" title="Toggle Sidebar">
+        <i data-lucide="panel-left"></i>
+      </button>
       <div class="brand-terminal">
         <div class="brand-logo-box">
           <i data-lucide="terminal" class="brand-icon"></i>
@@ -34,9 +41,9 @@
         <div class="brand-text-block">
           <div class="brand-title">
             <span>COMMODITY DERIVATIVES INTELLIGENCE</span>
-            <span class="badge-track">HACK IN HILLS '26 &bull; TRACK 03</span>
+            <span class="badge-track">TRACK 03</span>
           </div>
-          <div class="brand-sub">MCX GOLD &bull; QUANTITATIVE RELATIVE VALUE &amp; ARBITRAGE ENGINE</div>
+          <div class="brand-sub">MCX GOLD &bull; RELATIVE VALUE QUANT TERMINAL</div>
         </div>
       </div>
     </div>
@@ -51,8 +58,8 @@
 
       <div class="team-badge">
         <i data-lucide="shield-check" class="team-icon"></i>
-        <span class="team-name">Team Bits &amp; Bytes</span>
-        <span class="team-authors">Harsh Deep Chak &bull; Pallak Devi</span>
+        <span class="team-name">Bits &amp; Bytes</span>
+        <span class="team-authors">Harsh &bull; Pallak</span>
       </div>
 
       <div class="header-action-group">
@@ -63,15 +70,15 @@
         <button id="btnThemeToggle" class="btn-ctrl btn-icon-only" title="Toggle Light/Dark Terminal Mode">
           <i data-lucide="sun" id="themeIcon"></i>
         </button>
-        <button class="btn-ctrl btn-primary" id="btnRunSimulation">
+        <button class="btn-ctrl btn-primary" id="btnRunSimulation" title="Recompute Full 180-Day Pipeline">
           <i data-lucide="play" class="btn-icon"></i>
-          <span>Recompute Pipeline</span>
+          <span>Recompute</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Live Market Ticker Tape -->
+  <!-- Live Market Ticker Tape Strip -->
   <div class="ticker-tape-container">
     <div class="ticker-tape-header">
       <span class="ticker-pulse" id="mainTickerPulse"></span>
@@ -111,236 +118,415 @@
         <span class="stat-num">0.402%</span>
       </div>
       <div class="ticker-instrument stat-pill">
-        <span class="stat-lbl">Market Mode:</span>
-        <span class="stat-num green">CONTINUOUS TRADING</span>
+        <span class="stat-lbl">Execution:</span>
+        <span class="stat-num green">ZERO DIRECTIONAL BETA (&beta;&approx;0.00)</span>
       </div>
     </div>
   </div>
 
-  <!-- Main Terminal Shell Layout -->
+  <!-- Terminal Shell with Left Sidebar & Dedicated Views -->
   <div class="terminal-shell">
     
-    <!-- Left Navigation Rail -->
+    <!-- Left Navigation Panel (ChatGPT / Dashboard Architecture) -->
     <aside class="terminal-sidebar">
-      <div class="sidebar-section-label">NAVIGATION</div>
-      <nav class="sidebar-nav">
-        <a href="#section-signal" class="nav-item active">
-          <i data-lucide="zap"></i>
-          <span>Arbitrage Desk</span>
-        </a>
-        <a href="#section-contracts" class="nav-item">
-          <i data-lucide="layers"></i>
-          <span>Contract Matrix</span>
-        </a>
-        <a href="#section-normalization" class="nav-item">
-          <i data-lucide="refresh-cw"></i>
-          <span>Normalization</span>
-        </a>
-        <a href="#section-carry" class="nav-item">
-          <i data-lucide="trending-up"></i>
-          <span>Cost of Carry</span>
-        </a>
-        <a href="#section-frictions" class="nav-item">
-          <i data-lucide="shield-alert"></i>
-          <span>Friction &amp; Margin</span>
-        </a>
-        <a href="#section-ledger" class="nav-item">
-          <i data-lucide="receipt"></i>
-          <span>Audit Ledger</span>
-        </a>
-        <a href="#section-analytics" class="nav-item">
-          <i data-lucide="cpu"></i>
-          <span>Quant Analytics</span>
-        </a>
-      </nav>
+      <div class="sidebar-top">
+        <div class="sidebar-section-label">MAIN WORKSPACE</div>
+        <nav class="sidebar-nav">
+          <a href="#dashboard" class="nav-item active" data-view="view-dashboard">
+            <i data-lucide="layout-dashboard"></i>
+            <span class="nav-label">Dashboard</span>
+          </a>
+          <a href="#history" class="nav-item" data-view="view-history">
+            <i data-lucide="history"></i>
+            <span class="nav-label">Price History</span>
+          </a>
+          <a href="#graph" class="nav-item" data-view="view-graph">
+            <i data-lucide="line-chart"></i>
+            <span class="nav-label">Interactive Graph</span>
+          </a>
+          <a href="#arbitrage" class="nav-item" data-view="view-arbitrage">
+            <i data-lucide="zap"></i>
+            <span class="nav-label">Arbitrage Analysis</span>
+          </a>
+          <a href="#contracts" class="nav-item" data-view="view-contracts">
+            <i data-lucide="layers"></i>
+            <span class="nav-label">Contract Comparison</span>
+          </a>
+          <a href="#marketdata" class="nav-item" data-view="view-marketdata">
+            <i data-lucide="database"></i>
+            <span class="nav-label">Market Data</span>
+          </a>
+          <a href="#settings" class="nav-item" data-view="view-settings">
+            <i data-lucide="sliders"></i>
+            <span class="nav-label">Settings</span>
+          </a>
+        </nav>
+      </div>
 
-      <div class="sidebar-telemetry-box">
-        <div class="telemetry-box-title">RISK ENGINES</div>
-        <div class="telemetry-item">
-          <span>MCX SPAN:</span>
-          <strong class="green">60% Spread Disc.</strong>
-        </div>
-        <div class="telemetry-item">
-          <span>Pre-Tender Cut:</span>
-          <strong class="gold">T-5 Days Rule</strong>
-        </div>
-        <div class="telemetry-item">
-          <span>Residual Delta:</span>
-          <strong class="green">0.0g (Exact LCM)</strong>
+      <div class="sidebar-bottom">
+        <div class="sidebar-telemetry-box">
+          <div class="telemetry-box-title">SYSTEM RISK GATES</div>
+          <div class="telemetry-item">
+            <span>SPAN Benefit:</span>
+            <strong class="green">60% Spread Disc.</strong>
+          </div>
+          <div class="telemetry-item">
+            <span>Pre-Tender Cut:</span>
+            <strong class="gold">T-5 Days Rule</strong>
+          </div>
+          <div class="telemetry-item">
+            <span>Residual Delta:</span>
+            <strong class="green">0.0g (Exact LCM)</strong>
+          </div>
         </div>
       </div>
     </aside>
 
-    <!-- Main Workspace Area -->
+    <!-- Main Workspace Container: Switchable Views -->
     <main class="terminal-workspace">
 
-      <!-- ================= 01. HERO ARBITRAGE SIGNAL & PARAMETER TUNER ================= -->
-      <section class="panel-section" id="section-signal">
-        <div class="grid-signal-top">
-          
-          <!-- Hero Arbitrage Action Card -->
-          <div class="panel-card hero-signal-panel" id="signalHeroCard">
-            <div class="panel-header-sub">
-              <div class="panel-tag"><i data-lucide="activity"></i> STATISTICAL ARBITRAGE DESK</div>
-              <div class="market-pair-picker">
-                <label for="pairSelect">Active Pair:</label>
-                <select id="pairSelect" class="form-control-compact">
-                  <option value="GOLDM_GOLDTEN">GOLDM (100g) vs GOLDTEN (10g)</option>
-                  <option value="GOLDTEN_GOLDPETAL">GOLDTEN (10g) vs GOLDPETAL (1g)</option>
-                  <option value="GOLDM_GOLDGUINEA">GOLDM (100g) vs GOLDGUINEA (8g)</option>
-                  <option value="GOLDGUINEA_GOLDPETAL">GOLDGUINEA (8g) vs GOLDPETAL (1g)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="signal-core-row">
-              <div class="signal-badge-wrapper">
-                <div class="signal-action-badge" id="signalActionBadge">
-                  <i data-lucide="check-circle" class="badge-icon"></i>
-                  <span id="signalActionText">BUY GOLDM / SELL GOLDTEN</span>
-                </div>
-                <p class="signal-narrative" id="signalExplanation">
-                  Current carry-adjusted spread has diverged to <strong id="heroZText">-2.34 σ</strong> (exceeding ±2.0 σ trigger hurdle). Target mean reversion generates <strong id="heroEdgeText">+₹8.42 / g</strong> net profit post-friction.
-                </p>
-              </div>
-
-              <!-- Quad Quantitative Risk KPIs -->
-              <div class="kpi-quad-grid">
-                <div class="kpi-cell">
-                  <div class="kpi-label">Current Z-Score</div>
-                  <div class="kpi-value" id="kpiZScore">-2.34 σ</div>
-                  <div class="kpi-sub">Hurdle: &plusmn;2.0 &sigma; | Stop: &plusmn;3.5 &sigma;</div>
-                </div>
-                <div class="kpi-cell">
-                  <div class="kpi-label">Expected Net Edge</div>
-                  <div class="kpi-value green" id="kpiNetEdge">+₹8.42 / g</div>
-                  <div class="kpi-sub">Survives All Frictions</div>
-                </div>
-                <div class="kpi-cell">
-                  <div class="kpi-label">Beta to Gold Spot</div>
-                  <div class="kpi-value" id="btBeta">0.012 &approx; 0.00</div>
-                  <div class="kpi-sub">Market Neutral</div>
-                </div>
-                <div class="kpi-cell">
-                  <div class="kpi-label">Sharpe Ratio</div>
-                  <div class="kpi-value green" id="btSharpe">2.41</div>
-                  <div class="kpi-sub">Walk-Forward Backtest</div>
-                </div>
-              </div>
-            </div>
+      <!-- ==========================================================================
+           VIEW 1: DASHBOARD (Executive Overview & Primary Action Desk)
+           ========================================================================== -->
+      <div id="view-dashboard" class="dashboard-view active-view">
+        <div class="view-header-strip">
+          <div class="view-header-titles">
+            <h2>Executive Arbitrage Dashboard</h2>
+            <p>Live relative value opportunity matrix, statistical convergence signals, and real-time execution bounds on MCX Gold.</p>
           </div>
-
-          <!-- Dynamic Parameter Tuner Card -->
-          <div class="panel-card tuner-panel">
-            <div class="panel-header-sub">
-              <div class="panel-tag"><i data-lucide="sliders"></i> DYNAMIC RISK PARAMETER TUNER</div>
-              <button class="btn-link-reset" id="btnResetTuner">
-                <i data-lucide="rotate-ccw"></i> Reset
-              </button>
-            </div>
-
-            <div class="tuner-sliders-list">
-              <div class="tuner-slider-unit">
-                <div class="slider-head">
-                  <label for="sliderZEntry">Entry Hurdle (Z<sub>entry</sub>)</label>
-                  <span id="lblZEntry">&plusmn;2.0 &sigma;</span>
-                </div>
-                <input type="range" id="sliderZEntry" min="1.2" max="3.0" step="0.1" value="2.0" />
-              </div>
-
-              <div class="tuner-slider-unit">
-                <div class="slider-head">
-                  <label for="sliderZExit">Exit Hurdle (Z<sub>exit</sub>)</label>
-                  <span id="lblZExit">&plusmn;0.5 &sigma;</span>
-                </div>
-                <input type="range" id="sliderZExit" min="0.0" max="1.2" step="0.1" value="0.5" />
-              </div>
-
-              <div class="tuner-slider-unit">
-                <div class="slider-head">
-                  <label for="sliderZStop">Stop-Loss (Z<sub>stop</sub>)</label>
-                  <span id="lblZStop">&plusmn;3.5 &sigma;</span>
-                </div>
-                <input type="range" id="sliderZStop" min="2.5" max="4.5" step="0.1" value="3.5" />
-              </div>
-
-              <div class="tuner-slider-unit">
-                <div class="slider-head">
-                  <label for="sliderLookback">Lookback Window</label>
-                  <span id="lblLookback">60 Days</span>
-                </div>
-                <input type="range" id="sliderLookback" min="30" max="120" step="5" value="60" />
-              </div>
-            </div>
+          <div class="market-pair-picker">
+            <label for="pairSelect">Active Trading Pair:</label>
+            <select id="pairSelect" class="form-control-compact">
+              <option value="GOLDM_GOLDTEN">GOLDM (100g) vs GOLDTEN (10g)</option>
+              <option value="GOLDTEN_GOLDPETAL">GOLDTEN (10g) vs GOLDPETAL (1g)</option>
+              <option value="GOLDM_GOLDGUINEA">GOLDM (100g) vs GOLDGUINEA (8g)</option>
+              <option value="GOLDGUINEA_GOLDPETAL">GOLDGUINEA (8g) vs GOLDPETAL (1g)</option>
+            </select>
           </div>
-
         </div>
-      </section>
 
-      <!-- ================= 02. PRIMARY CHARTS: Z-SCORE & FORWARD CURVE ================= -->
-      <section class="panel-section">
-        <div class="grid-split-charts">
-          
-          <!-- Main Z-Score Cointegration Chart -->
-          <div class="panel-card chart-panel">
-            <div class="panel-header-clean">
-              <div class="chart-header-left">
-                <h3>Dynamic Carry-Adjusted Z-Score Spread &amp; Thresholds</h3>
-                <span class="sub-caption">Real-time cointegration residual tracking with active &plusmn;2.0&sigma; entry hurdles and &plusmn;3.5&sigma; stop-loss gates</span>
-              </div>
-              <div class="chart-status-pill">
-                <span class="pill-dot green"></span> Live Model
-              </div>
-            </div>
-            <div id="chartZScore" class="chart-container-terminal"></div>
+        <!-- Primary Hero Signal Card -->
+        <div class="panel-card hero-signal-panel" id="signalHeroCard">
+          <div class="panel-header-sub">
+            <div class="panel-tag"><i data-lucide="zap"></i> RELATIVE VALUE ALPHA OPPORTUNITY</div>
+            <span class="badge-hint">Continuous 120ms Ingestion</span>
           </div>
 
-          <!-- Dynamic Term Structure & Carry Sliders -->
+          <div class="signal-core-row">
+            <div class="signal-badge-wrapper">
+              <div class="signal-action-badge" id="signalActionBadge">
+                <i data-lucide="check-circle" class="badge-icon"></i>
+                <span id="signalActionText">BUY GOLDM / SELL GOLDTEN</span>
+              </div>
+              <p class="signal-narrative" id="signalExplanation">
+                Current carry-adjusted spread has diverged to <strong id="heroZText">-2.34 σ</strong> (exceeding ±2.0 σ trigger hurdle). Target mean reversion generates <strong id="heroEdgeText">+₹8.42 / g</strong> net profit post-friction.
+              </p>
+            </div>
+
+            <!-- Quad Quantitative Risk KPIs -->
+            <div class="kpi-quad-grid">
+              <div class="kpi-cell">
+                <div class="kpi-label">Current Z-Score</div>
+                <div class="kpi-value" id="kpiZScore">-2.34 σ</div>
+                <div class="kpi-sub">Hurdle: &plusmn;2.0 &sigma; | Stop: &plusmn;3.5 &sigma;</div>
+              </div>
+              <div class="kpi-cell">
+                <div class="kpi-label">Expected Net Edge</div>
+                <div class="kpi-value green" id="kpiNetEdge">+₹8.42 / g</div>
+                <div class="kpi-sub">Survives All Indian Taxes</div>
+              </div>
+              <div class="kpi-cell">
+                <div class="kpi-label">Beta to Gold Spot</div>
+                <div class="kpi-value" id="btBeta">0.012 &approx; 0.00</div>
+                <div class="kpi-sub">Market Neutral Exposure</div>
+              </div>
+              <div class="kpi-cell">
+                <div class="kpi-label">Sharpe Ratio</div>
+                <div class="kpi-value green" id="btSharpe">2.41</div>
+                <div class="kpi-sub">Walk-Forward Backtest</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Z-Score Snapshot Chart -->
+        <div class="panel-card chart-panel">
+          <div class="panel-header-clean">
+            <div>
+              <h3>Dynamic Carry-Adjusted Spread &amp; Execution Bounds</h3>
+              <span class="sub-caption">Real-time Z-score deviation against &plusmn;2.0&sigma; entry thresholds and &plusmn;3.5&sigma; risk stops</span>
+            </div>
+            <div class="chart-status-pill">
+              <span class="pill-dot green"></span> Active Signal
+            </div>
+          </div>
+          <div id="chartZScore" class="chart-container-terminal"></div>
+        </div>
+
+        <!-- Quick Telemetry Metric Bar -->
+        <div class="grid-carry-metrics">
+          <div class="panel-card carry-metric-card">
+            <div class="metric-card-top">
+              <span class="metric-card-lbl">Dynamic Expiry Gap</span>
+              <i data-lucide="clock" class="metric-card-icon"></i>
+            </div>
+            <div class="metric-card-num" id="carryDaysDisplay">24 Days (T-t Decay)</div>
+            <div class="metric-card-desc">Active maturity basis countdown</div>
+          </div>
+
+          <div class="panel-card carry-metric-card">
+            <div class="metric-card-top">
+              <span class="metric-card-lbl">Theoretical Financing Carry</span>
+              <i data-lucide="percent" class="metric-card-icon"></i>
+            </div>
+            <div class="metric-card-num" id="carryCostDisplay">₹31.14 / g</div>
+            <div class="metric-card-desc">At 6.50% Repo Financing ($r$)</div>
+          </div>
+
+          <div class="panel-card carry-metric-card">
+            <div class="metric-card-top">
+              <span class="metric-card-lbl">Ornstein-Uhlenbeck Half-Life</span>
+              <i data-lucide="timer" class="metric-card-icon"></i>
+            </div>
+            <div class="metric-card-num" id="statHalfLife">4.2 Days</div>
+            <div class="metric-card-desc">Mean reversion horizon ($\tau = \ln 2 / \theta$)</div>
+          </div>
+
+          <div class="panel-card carry-metric-card">
+            <div class="metric-card-top">
+              <span class="metric-card-lbl">ADF Stationarity Test</span>
+              <i data-lucide="check-circle-2" class="metric-card-icon"></i>
+            </div>
+            <div class="metric-card-num green" id="statAdfPVal">0.008 (STATIONARY)</div>
+            <div class="metric-card-desc">Dickey-Fuller Unit Root Test ($p &lt; 0.05$)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================================================
+           VIEW 2: PRICE HISTORY (Historical Series & Audited Execution Ledger)
+           ========================================================================== -->
+      <div id="view-history" class="dashboard-view">
+        <div class="view-header-strip">
+          <div class="view-header-titles">
+            <h2>Price History &amp; Audited Trade Ledger</h2>
+            <p>180-day standardized historical series, price cointegration trajectory, and complete trade fill records.</p>
+          </div>
+          <button class="btn-ctrl btn-secondary" id="btnExportTrades">
+            <i data-lucide="download"></i> Export Trade Sheet (CSV)
+          </button>
+        </div>
+
+        <!-- Normalized Price Series Multi-Contract Chart -->
+        <div class="panel-card chart-panel">
+          <div class="panel-header-clean">
+            <div>
+              <h3>Normalized Historical Price Trajectories (INR / 1g 999 Fine Gold)</h3>
+              <span class="sub-caption">Purity-standardized and unit-cleared pricing across all active MCX Gold contracts</span>
+            </div>
+            <div class="chart-status-pill">
+              <span class="pill-dot gold"></span> Standardized Basis
+            </div>
+          </div>
+          <div id="chartNormalizedPrices" class="chart-container-terminal"></div>
+        </div>
+
+        <!-- Audited Trade Execution Table -->
+        <div class="panel-card trade-ledger-panel">
+          <div class="panel-header-clean">
+            <div>
+              <h3>Algorithmic Trade Execution Audit Ledger</h3>
+              <span class="sub-caption">Audited fills, friction deductions, stop-loss checks, and mandatory pre-tender squareoffs</span>
+            </div>
+          </div>
+
+          <div class="quant-table-wrapper">
+            <table class="terminal-table quant-table">
+              <thead>
+                <tr>
+                  <th>Trade #</th>
+                  <th>Holding Window</th>
+                  <th>Action / Spread Pair</th>
+                  <th>Entry &rarr; Exit Spread</th>
+                  <th>Net Realized PnL (Post-Tax)</th>
+                  <th>Exit Rule Trigger</th>
+                </tr>
+              </thead>
+              <tbody id="tradeTableBody">
+                <!-- Populated dynamically by app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================================================
+           VIEW 3: INTERACTIVE GRAPH (Deep Quant Visualization Suite)
+           ========================================================================== -->
+      <div id="view-graph" class="dashboard-view">
+        <div class="view-header-strip">
+          <div class="view-header-titles">
+            <h2>Interactive Quant Graphs &amp; Term Structure</h2>
+            <p>Explore implied forward curves, dynamic Kalman filter state tracking, and market-neutral OLS beta proofs.</p>
+          </div>
+        </div>
+
+        <div class="grid-split-charts">
+          <!-- Dynamic Forward Curve & Term Structure -->
           <div class="panel-card chart-panel">
             <div class="panel-header-clean">
-              <div class="chart-header-left">
-                <h3>Implied Term Structure Curve</h3>
-                <span class="sub-caption">Cash Spot to Far Month maturities ($T - t$)</span>
+              <div>
+                <h3>Implied Term Structure Forward Curve</h3>
+                <span class="sub-caption">Cash Spot to Far Month maturities with dynamic maturity decay ($T - t$)</span>
               </div>
               <div class="chart-status-pill">
                 <span class="pill-dot gold"></span> Repo Linked
               </div>
             </div>
             <div id="chartTermStructure" class="chart-container-compact"></div>
-            
-            <div class="carry-slider-inline-group">
-              <div class="slider-inline-unit">
-                <div class="slider-inline-head">
-                  <label for="rateSlider">Financing Repo Rate (r):</label>
-                  <span id="rateVal">6.50%</span>
-                </div>
-                <input type="range" id="rateSlider" min="4.0" max="10.0" step="0.25" value="6.50" />
+          </div>
+
+          <!-- OLS Beta Regression Market Neutrality Proof -->
+          <div class="panel-card chart-panel">
+            <div class="panel-header-clean">
+              <div>
+                <h3>OLS Return Regression Proof (&beta; &approx; 0.00)</h3>
+                <span class="sub-caption">Spread return vs physical gold spot demonstrating true market-neutral delta</span>
               </div>
-              <div class="slider-inline-unit">
-                <div class="slider-inline-head">
-                  <label for="carryS">Vault Storage &amp; Lease (s - y):</label>
-                  <span id="carrySVal">0.15%</span>
-                </div>
-                <input type="range" id="carryS" min="0.0" max="1.0" step="0.05" value="0.15" />
+              <div class="chart-status-pill">
+                <span class="pill-dot green"></span> Zero Beta
               </div>
+            </div>
+            <div id="chartRegression" class="chart-container-compact"></div>
+          </div>
+        </div>
+
+        <!-- Dynamic Kalman Filter State-Space Tracking Chart -->
+        <div class="panel-card chart-panel" style="margin-top:16px;">
+          <div class="panel-header-clean">
+            <div>
+              <h3>Dynamic Kalman Filter State-Space Tracking (&beta;<sub>t</sub> Hedge Ratio Drift)</h3>
+              <span class="sub-caption">Online recursive state estimation tracking time-varying cointegration against the 1.0040 physical purity benchmark</span>
+            </div>
+            <div class="chart-status-pill">
+              <span class="pill-dot green"></span> Kalman Filter Active
+            </div>
+          </div>
+          <div id="chartKalman" class="chart-container-terminal"></div>
+        </div>
+      </div>
+
+      <!-- ==========================================================================
+           VIEW 4: ARBITRAGE ANALYSIS (Deep Cost of Carry, Frictions & ILP Lot Solver)
+           ========================================================================== -->
+      <div id="view-arbitrage" class="dashboard-view">
+        <div class="view-header-strip">
+          <div class="view-header-titles">
+            <h2>Arbitrage Analysis &amp; Friction Engine</h2>
+            <p>Rigorous breakdown of statutory taxes, discrete lot sizing (ILP), tender margin penalty risks, and P&L attribution.</p>
+          </div>
+        </div>
+
+        <!-- Frictions & Statutory Tax Breakdown -->
+        <div class="panel-card frictions-container-panel">
+          <div class="friction-summary-strip">
+            <div class="summary-strip-left">
+              <div class="panel-tag"><i data-lucide="receipt"></i> INDIAN STATUTORY TAXES &amp; EXCHANGE FRICTIONS</div>
+              <p>Every relative-value signal must survive statutory CTT, exchange turnover fees, stamp duty, brokerage, and slippage before generating net profit.</p>
+            </div>
+            <div class="summary-strip-right">
+              <span class="friction-pill-label">Total Friction Drag:</span>
+              <span class="friction-pill-val" id="totalFrictionDisplay">₹189.20 / ₹10L Turnover</span>
             </div>
           </div>
 
-        </div>
-      </section>
+          <div class="friction-chips-grid">
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">Commodity Transaction Tax (CTT)</span>
+              <strong class="chip-tax-val">0.01% on Sell</strong>
+            </div>
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">MCX Exchange Turnover Fee</span>
+              <strong class="chip-tax-val">0.0021%</strong>
+            </div>
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">State Stamp Duty</span>
+              <strong class="chip-tax-val">0.0020% on Buy</strong>
+            </div>
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">Brokerage + 18% GST</span>
+              <strong class="chip-tax-val">₹20 / Executed Order</strong>
+            </div>
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">Discrete Lot Ratio (ILP)</span>
+              <strong class="chip-tax-val gold" id="lotSolverRatio">1 Lot A : 10 Lot B</strong>
+            </div>
+          </div>
 
-      <!-- ================= 03. CONTRACT MATRIX & NORMALIZATION PIPELINE ================= -->
-      <section class="panel-section" id="section-contracts">
+          <!-- Risk & Delivery Margin Surge Cards Split -->
+          <div class="risk-controls-split">
+            <!-- Discrete Lot & SPAN Card -->
+            <div class="risk-sub-card">
+              <div class="risk-card-head">
+                <i data-lucide="layers" class="gold"></i>
+                <h4>Integer Linear Programming (ILP) Zero-Delta Lot Solver</h4>
+              </div>
+              <p>Guarantees exact 0.0g residual unhedged commodity delta using discrete contract granularity.</p>
+              <div class="risk-metric-foot">
+                <span class="label">SPAN Margin Requirement:</span>
+                <strong id="lotSpanMargin" class="val">₹58,360 (SPAN w/ 60% Spread Discount)</strong>
+              </div>
+            </div>
+
+            <!-- Compulsory Delivery & Tender Escalation Card -->
+            <div class="risk-sub-card alert-risk">
+              <div class="risk-card-head">
+                <i data-lucide="alert-triangle" class="red"></i>
+                <h4 class="red">Compulsory Physical Delivery &amp; Tender Margin Surge (T-5 Days)</h4>
+              </div>
+              <p>MCX mandates staggered delivery margins starting 5 days prior to expiry. Margins escalate from <strong>9.0% to 40.0%</strong> (+5%/day), risking capital lockup and vault delivery penalties.</p>
+              <div class="risk-metric-foot">
+                <span class="status-chip-alert">&check; Automated Pre-Tender Squareoff at T-5 Days</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- P&L Waterfall Attribution Chart -->
+        <div class="panel-card chart-panel" style="margin-top:16px;">
+          <div class="panel-header-clean">
+            <div>
+              <h3>Trade P&amp;L Waterfall &amp; Statutory Attribution</h3>
+              <span class="sub-caption">Visual attribution of gross spread mispricing, microstructure slippage, statutory taxes, and net realized alpha</span>
+            </div>
+            <div class="chart-status-pill">
+              <span class="pill-dot green"></span> Net Profitable
+            </div>
+          </div>
+          <div id="chartWaterfall" class="chart-container-compact"></div>
+        </div>
+      </div>
+
+      <!-- ==========================================================================
+           VIEW 5: CONTRACT COMPARISON (Contract Matrix & Purity Normalization)
+           ========================================================================== -->
+      <div id="view-contracts" class="dashboard-view">
+        <div class="view-header-strip">
+          <div class="view-header-titles">
+            <h2>Contract Comparison &amp; Normalization Matrix</h2>
+            <p>Cross-contract comparison of lot sizes, purities, quotation units, and the mathematical normalization pipeline.</p>
+          </div>
+        </div>
+
         <div class="grid-contracts-normalization">
-          
           <!-- Institutional Contract Comparison Matrix -->
           <div class="panel-card contracts-matrix-panel">
             <div class="panel-header-clean">
               <div>
-                <h3>MCX Gold Derivatives Contract Matrix</h3>
-                <span class="sub-caption">4 specifications on physical bullion with differing purity, lot sizes, and settlement cycles</span>
+                <h3>MCX Gold Derivatives Contract Specifications</h3>
+                <span class="sub-caption">Physical gold underlying with differing purities, lot sizes, and maturity cycles</span>
               </div>
-              <span class="badge-hint">Click row to inspect</span>
+              <span class="badge-hint">Click row to test normalization</span>
             </div>
 
             <div class="contracts-matrix-table-wrapper" id="contractsList">
@@ -427,17 +613,17 @@
           </div>
 
           <!-- Purity & Lot Normalization Panel -->
-          <div class="panel-card normalization-panel" id="section-normalization">
+          <div class="panel-card normalization-panel">
             <div class="panel-header-clean">
               <div>
-                <h3>Standardized Cash Benchmark Pipeline</h3>
+                <h3>Standardized Cash Benchmark Flow</h3>
                 <span class="sub-caption">Purity &amp; Granularity Normalization to universal <strong>INR / 1g 999 Fine Gold</strong></span>
               </div>
             </div>
 
             <div class="normalization-pipeline-flow">
               <div class="flow-step">
-                <div class="flow-step-label">RAW QUOTE (<span id="normSelectedSym">GOLDM</span>)</div>
+                <div class="flow-step-label">RAW MARKET QUOTE (<span id="normSelectedSym">GOLDM</span>)</div>
                 <div class="flow-step-val" id="normRawDisplay">₹72,450 / 10g</div>
                 <div class="flow-step-sub">Quotation Unit: 10g &bull; Fineness: 995</div>
               </div>
@@ -455,7 +641,7 @@
             </div>
 
             <!-- Normalization Live Math Drawer -->
-            <details class="terminal-accordion">
+            <details class="terminal-accordion" open>
               <summary>
                 <span><i data-lucide="code-2"></i> View Normalization Formula &amp; Live Interactive Calculator</span>
                 <span class="accordion-arrow">&darr;</span>
@@ -479,238 +665,151 @@
               </div>
             </details>
           </div>
-
         </div>
-      </section>
+      </div>
 
-      <!-- ================= 04. COST OF CARRY & QUANT STATISTICAL METRICS ================= -->
-      <section class="panel-section" id="section-carry">
-        <div class="grid-carry-metrics">
-          
-          <div class="panel-card carry-metric-card">
-            <div class="metric-card-top">
-              <span class="metric-card-lbl">Dynamic Expiry Countdown</span>
-              <i data-lucide="clock" class="metric-card-icon"></i>
-            </div>
-            <div class="metric-card-num" id="carryDaysDisplay">24 Days (T-t Decay)</div>
-            <div class="metric-card-desc">Active maturity basis convergence horizon</div>
+      <!-- ==========================================================================
+           VIEW 6: MARKET DATA (MCX Bhavcopy Ingestion & Anomaly Sanitizer)
+           ========================================================================== -->
+      <div id="view-marketdata" class="dashboard-view">
+        <div class="view-header-strip">
+          <div class="view-header-titles">
+            <h2>Market Data &amp; Bhavcopy Ingestion Engine</h2>
+            <p>Ingest custom multi-contract MCX Bhavcopy settlement files or test data hygiene against real-world exchange anomalies.</p>
           </div>
-
-          <div class="panel-card carry-metric-card">
-            <div class="metric-card-top">
-              <span class="metric-card-lbl">Theoretical Financing Carry</span>
-              <i data-lucide="percent" class="metric-card-icon"></i>
-            </div>
-            <div class="metric-card-num" id="carryCostDisplay">₹31.14 / g</div>
-            <div class="metric-card-desc">At 6.50% Repo Rate &bull; $F = S \cdot e^{(r+s-y)\Delta t}$</div>
-          </div>
-
-          <div class="panel-card carry-metric-card">
-            <div class="metric-card-top">
-              <span class="metric-card-lbl">Ornstein-Uhlenbeck Half-Life</span>
-              <i data-lucide="timer" class="metric-card-icon"></i>
-            </div>
-            <div class="metric-card-num" id="statHalfLife">4.2 Days</div>
-            <div class="metric-card-desc">Mean reversion speed ($\tau = \ln 2 / \theta$)</div>
-          </div>
-
-          <div class="panel-card carry-metric-card">
-            <div class="metric-card-top">
-              <span class="metric-card-lbl">ADF Stationarity Test</span>
-              <i data-lucide="check-circle-2" class="metric-card-icon"></i>
-            </div>
-            <div class="metric-card-num green" id="statAdfPVal">0.008 (STATIONARY)</div>
-            <div class="metric-card-desc">Dickey-Fuller Unit Root Test ($p &lt; 0.05$)</div>
-          </div>
-
+          <button class="btn-ctrl btn-secondary" id="btnDownloadSampleCsv">
+            <i data-lucide="file-down"></i> Download Sample Bhavcopy (.csv)
+          </button>
         </div>
-      </section>
 
-      <!-- ================= 05. FRICTION DRAG, SPAN LOT SOLVER & DELIVERY RISK ================= -->
-      <section class="panel-section" id="section-frictions">
-        <div class="panel-card frictions-container-panel">
-          
-          <div class="friction-summary-strip">
-            <div class="summary-strip-left">
-              <div class="panel-tag"><i data-lucide="receipt"></i> STATUTORY FRICTION DRAG &amp; SPAN LOT OPTIMIZER</div>
-              <p>Every trade must survive Indian exchange turnover fees, CTT, stamp duty, brokerage, and bid-ask slippage before booking net alpha.</p>
-            </div>
-            <div class="summary-strip-right">
-              <span class="friction-pill-label">Total Friction Cost:</span>
-              <span class="friction-pill-val" id="totalFrictionDisplay">₹189.20 / ₹10L Turnover</span>
-            </div>
+        <div class="etl-container-box">
+          <!-- File Drop Zone -->
+          <div class="file-drop-zone" id="fileDropZone">
+            <i data-lucide="upload-cloud" class="drop-icon"></i>
+            <p class="drop-title">Drag &amp; Drop MCX Bhavcopy (.csv, .txt) here, or click to browse</p>
+            <span class="drop-sub">Parses raw multi-contract settlement prices, trade volume filters, date mismatches, and holiday prints</span>
+            <input type="file" id="csvFileInput" accept=".csv,.txt" style="display:none;" />
           </div>
 
-          <div class="friction-chips-grid">
-            <div class="friction-chip-item">
-              <span class="chip-tax-name">Commodity Transaction Tax (CTT)</span>
-              <strong class="chip-tax-val">0.01% on Sell</strong>
-            </div>
-            <div class="friction-chip-item">
-              <span class="chip-tax-name">MCX Exchange Turnover Fee</span>
-              <strong class="chip-tax-val">0.0021%</strong>
-            </div>
-            <div class="friction-chip-item">
-              <span class="chip-tax-name">State Stamp Duty</span>
-              <strong class="chip-tax-val">0.0020% on Buy</strong>
-            </div>
-            <div class="friction-chip-item">
-              <span class="chip-tax-name">Brokerage + 18% GST</span>
-              <strong class="chip-tax-val">₹20 / Executed Order</strong>
-            </div>
-            <div class="friction-chip-item">
-              <span class="chip-tax-name">Discrete Lot Ratio (ILP)</span>
-              <strong class="chip-tax-val gold" id="lotSolverRatio">1 Lot A : 10 Lot B</strong>
-            </div>
-          </div>
-
-          <!-- Risk & Delivery Cards Split -->
-          <div class="risk-controls-split">
-            <!-- Discrete Lot & SPAN Card -->
-            <div class="risk-sub-card">
-              <div class="risk-card-head">
-                <i data-lucide="layers" class="gold"></i>
-                <h4>Integer Linear Programming (ILP) Zero-Delta Sizing</h4>
-              </div>
-              <p>Guarantees exact 0.0g residual unhedged commodity delta using discrete contract granularity.</p>
-              <div class="risk-metric-foot">
-                <span class="label">SPAN Margin Requirement:</span>
-                <strong id="lotSpanMargin" class="val">₹58,360 (SPAN w/ 60% Spread Discount)</strong>
+          <!-- Interactive Anomaly Sanitizer Sandbox -->
+          <div class="sanitizer-box">
+            <div class="sanitizer-head">
+              <h5 style="margin:0; font-size:0.86rem; color:var(--text-primary); font-weight:700;">Interactive MCX Bhavcopy Anomaly Sanitizer Sandbox</h5>
+              <div class="preset-btn-group">
+                <button class="btn-preset" data-preset="holiday">Holiday Quirk</button>
+                <button class="btn-preset" data-preset="dates">Date Mismatch</button>
+                <button class="btn-preset" data-preset="space">Space Padding</button>
+                <button class="btn-preset" data-preset="zerovol">Zero Volume</button>
               </div>
             </div>
 
-            <!-- Compulsory Delivery & Tender Escalation Card -->
-            <div class="risk-sub-card alert-risk">
-              <div class="risk-card-head">
-                <i data-lucide="alert-triangle" class="red"></i>
-                <h4 class="red">Compulsory Delivery &amp; Tender Margin Surge (T-5 Days)</h4>
-              </div>
-              <p>MCX mandates staggered delivery margins starting 5 days prior to expiry. Margins escalate from <strong>9.0% to 40.0%</strong> (+5%/day), risking capital lockup and vault delivery penalties.</p>
-              <div class="risk-metric-foot">
-                <span class="status-chip-alert">&check; Automated Pre-Tender Squareoff at T-5 Days</span>
-              </div>
+            <div class="sanitizer-input-row">
+              <input type="text" id="rawCsvInput" class="form-control-compact font-mono" value=' "GOLDM   " , "04SEP2026" , 72450.00 , 10 , 995 , 0 ' />
+              <button class="btn-ctrl btn-primary" id="btnSanitize"><i data-lucide="zap"></i> Run Sanitizer</button>
             </div>
-          </div>
-
-          <!-- P&L Waterfall Attribution Chart Accordion -->
-          <details class="terminal-accordion" style="margin-top:14px;">
-            <summary>
-              <span><i data-lucide="bar-chart-2"></i> View Trade P&amp;L Waterfall &amp; Statutory Attribution</span>
-              <span class="accordion-arrow">&darr;</span>
-            </summary>
-            <div class="accordion-body">
-              <div id="chartWaterfall" class="chart-container-compact"></div>
-            </div>
-          </details>
-
-        </div>
-      </section>
-
-      <!-- ================= 06. AUDITED TRADE EXECUTION LEDGER ================= -->
-      <section class="panel-section" id="section-ledger">
-        <div class="panel-card trade-ledger-panel">
-          <div class="panel-header-clean">
-            <div>
-              <h3>Algorithmic Trade Execution Audit Ledger</h3>
-              <span class="sub-caption">Historical simulated trade entries, exits, holding durations, post-friction net PnL, and exit triggers</span>
-            </div>
-            <button class="btn-ctrl btn-secondary" id="btnExportTrades">
-              <i data-lucide="download"></i> Export Trade Sheet (CSV)
-            </button>
-          </div>
-
-          <div class="quant-table-wrapper">
-            <table class="terminal-table quant-table">
-              <thead>
-                <tr>
-                  <th>Trade #</th>
-                  <th>Holding Window</th>
-                  <th>Action / Spread Pair</th>
-                  <th>Entry &rarr; Exit Spread</th>
-                  <th>Net Realized PnL (Post-Tax)</th>
-                  <th>Exit Rule Trigger</th>
-                </tr>
-              </thead>
-              <tbody id="tradeTableBody">
-                <!-- Populated dynamically by app.js -->
-              </tbody>
-            </table>
+            <pre id="sanitizerOutput" class="json-output">Click "Run Sanitizer" to inspect standardized ETL output...</pre>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- ================= 07. DEEP QUANT RESEARCH & BHAVCOPY ETL SUITE ================= -->
-      <section class="panel-section" id="section-analytics">
-        <details class="terminal-accordion active-default" open>
-          <summary>
-            <span><i data-lucide="database"></i> Deep Quant Analytics Suite: Dynamic Kalman Filter, OLS Regression &amp; MCX Bhavcopy ETL</span>
-            <span class="accordion-arrow">&darr;</span>
-          </summary>
-          <div class="accordion-body">
-            
-            <div class="grid-split-charts" style="margin-bottom:18px;">
-              <div class="panel-card-inner">
-                <h4 class="inner-chart-title">Normalized Price Series (INR / 1g 999 Baseline)</h4>
-                <div id="chartNormalizedPrices" class="chart-container-compact"></div>
-              </div>
-              <div class="panel-card-inner">
-                <h4 class="inner-chart-title">OLS Return Regression Proof (&beta; &approx; 0.00 Market Neutrality)</h4>
-                <div id="chartRegression" class="chart-container-compact"></div>
-              </div>
+      <!-- ==========================================================================
+           VIEW 7: SETTINGS (Model Configuration & Risk Controls)
+           ========================================================================== -->
+      <div id="view-settings" class="dashboard-view">
+        <div class="view-header-strip">
+          <div class="view-header-titles">
+            <h2>Model Configuration &amp; Parameter Tuner</h2>
+            <p>Customize entry hurdle triggers, stop-loss risk bounds, lookback estimation windows, and macroeconomic repo rates.</p>
+          </div>
+          <button class="btn-ctrl btn-secondary" id="btnResetTuner">
+            <i data-lucide="rotate-ccw"></i> Reset Strategy Defaults
+          </button>
+        </div>
+
+        <div class="grid-signal-top">
+          <!-- Dynamic Strategy Risk Parameter Tuner -->
+          <div class="panel-card tuner-panel">
+            <div class="panel-header-sub">
+              <div class="panel-tag"><i data-lucide="sliders"></i> STATISTICAL ARBITRAGE PARAMETER GATES</div>
             </div>
 
-            <!-- Dynamic Kalman Filter State-Space Tracking -->
-            <div class="panel-card-inner" style="margin-bottom:20px;">
-              <div class="panel-header-sub">
-                <div class="panel-tag"><i data-lucide="activity"></i> KALMAN FILTER ONLINE STATE TRACKING (&beta;<sub>t</sub> HEDGE RATIO DRIFT)</div>
-                <span class="badge-hint">Continuous Recursive State Estimation</span>
-              </div>
-              <div id="chartKalman" class="chart-container-compact"></div>
-            </div>
-
-            <!-- MCX Bhavcopy CSV Uploader & Ingestion -->
-            <div class="etl-container-box">
-              <div class="panel-header-clean">
-                <div>
-                  <h4 style="margin:0; font-size:0.95rem; font-weight:700;">MCX Bhavcopy CSV Ingestion Engine</h4>
-                  <span class="sub-caption">Drag-and-drop raw multi-contract exchange settlement files for instant end-to-end backtesting</span>
+            <div class="tuner-sliders-list">
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="sliderZEntry">Entry Hurdle (Z<sub>entry</sub>)</label>
+                  <span id="lblZEntry">&plusmn;2.0 &sigma;</span>
                 </div>
-                <button class="btn-ctrl btn-secondary" id="btnDownloadSampleCsv">
-                  <i data-lucide="file-down"></i> Download Sample Bhavcopy (.csv)
-                </button>
+                <input type="range" id="sliderZEntry" min="1.2" max="3.0" step="0.1" value="2.0" />
               </div>
 
-              <div class="file-drop-zone" id="fileDropZone">
-                <i data-lucide="upload-cloud" class="drop-icon"></i>
-                <p class="drop-title">Drag &amp; Drop MCX Bhavcopy (.csv, .txt) here, or click to browse</p>
-                <span class="drop-sub">Parses raw contract settlements, volume filters, date formats, and holiday anomalies</span>
-                <input type="file" id="csvFileInput" accept=".csv,.txt" style="display:none;" />
-              </div>
-
-              <!-- Interactive Anomaly Sanitizer Sandbox -->
-              <div class="sanitizer-box">
-                <div class="sanitizer-head">
-                  <h5 style="margin:0; font-size:0.86rem; color:var(--text-primary); font-weight:700;">Interactive MCX Bhavcopy Anomaly Sanitizer</h5>
-                  <div class="preset-btn-group">
-                    <button class="btn-preset" data-preset="holiday">Holiday Quirk</button>
-                    <button class="btn-preset" data-preset="dates">Date Mismatch</button>
-                    <button class="btn-preset" data-preset="space">Space Padding</button>
-                    <button class="btn-preset" data-preset="zerovol">Zero Volume</button>
-                  </div>
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="sliderZExit">Exit Hurdle (Z<sub>exit</sub>)</label>
+                  <span id="lblZExit">&plusmn;0.5 &sigma;</span>
                 </div>
-
-                <div class="sanitizer-input-row">
-                  <input type="text" id="rawCsvInput" class="form-control-compact font-mono" value=' "GOLDM   " , "04SEP2026" , 72450.00 , 10 , 995 , 0 ' />
-                  <button class="btn-ctrl btn-primary" id="btnSanitize"><i data-lucide="zap"></i> Run Sanitizer</button>
-                </div>
-                <pre id="sanitizerOutput" class="json-output">Click "Run Sanitizer" to inspect standardized ETL output...</pre>
+                <input type="range" id="sliderZExit" min="0.0" max="1.2" step="0.1" value="0.5" />
               </div>
 
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="sliderZStop">Stop-Loss (Z<sub>stop</sub>)</label>
+                  <span id="lblZStop">&plusmn;3.5 &sigma;</span>
+                </div>
+                <input type="range" id="sliderZStop" min="2.5" max="4.5" step="0.1" value="3.5" />
+              </div>
+
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="sliderLookback">Lookback Estimation Window</label>
+                  <span id="lblLookback">60 Days</span>
+                </div>
+                <input type="range" id="sliderLookback" min="30" max="120" step="5" value="60" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Macroeconomic Financing & Carry Parameters -->
+          <div class="panel-card tuner-panel">
+            <div class="panel-header-sub">
+              <div class="panel-tag"><i data-lucide="percent"></i> MACRO FINANCING &amp; STORAGE RATES</div>
             </div>
 
+            <div class="tuner-sliders-list">
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="rateSlider">Financing Repo Rate (r)</label>
+                  <span id="rateVal">6.50%</span>
+                </div>
+                <input type="range" id="rateSlider" min="4.0" max="10.0" step="0.25" value="6.50" />
+              </div>
+
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="carryS">Vault Storage &amp; Lease (s - y)</label>
+                  <span id="carrySVal">0.15%</span>
+                </div>
+                <input type="range" id="carryS" min="0.0" max="1.0" step="0.05" value="0.15" />
+              </div>
+            </div>
+
+            <div class="sidebar-telemetry-box" style="margin-top:12px;">
+              <div class="telemetry-box-title">METHODOLOGY CONSTRAINTS</div>
+              <div class="telemetry-item">
+                <span>Cost of Carry Model:</span>
+                <strong class="gold">F = S &bull; exp((r+s-y)&Delta;t)</strong>
+              </div>
+              <div class="telemetry-item">
+                <span>Cointegration Engine:</span>
+                <strong class="green">Kalman State &beta;(t) Drift</strong>
+              </div>
+              <div class="telemetry-item">
+                <span>Lot Granularity Engine:</span>
+                <strong class="green">Discrete Integer LCM Sizer</strong>
+              </div>
+            </div>
           </div>
-        </details>
-      </section>
+        </div>
+      </div>
 
     </main>
   </div>
