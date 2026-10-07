@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Commodity Derivatives Intelligence | MCX Gold Relative Value Engine</title>
+  <title>Commodity Derivatives Intelligence | MCX Gold Relative Value Terminal</title>
   
-  <!-- Fonts -->
+  <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- External Libraries -->
   <script src="https://cdn.plot.ly/plotly-2.29.1.min.js"></script>
@@ -24,520 +24,706 @@
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <!-- Hero Header with Mountain Panorama Background -->
-  <header class="hero-mountain-header">
-    <div class="hero-top-nav">
-      <div>
-        <div class="brand-badge"><i data-lucide="mountain"></i> HACK IN HILLS '26 &bull; TRACK 03</div>
-        <div class="title-group">
-          <h1>Commodity Derivatives Intelligence</h1>
-          <p class="subtitle">Cross-Contract Normalization, Cost-of-Carry Analytics &amp; Market-Neutral Relative Value Arbitrage on MCX Gold</p>
+  <!-- Terminal Top Header Bar -->
+  <header class="terminal-topbar">
+    <div class="topbar-left">
+      <div class="brand-terminal">
+        <div class="brand-logo-box">
+          <i data-lucide="terminal" class="brand-icon"></i>
         </div>
-      </div>
-      <div class="header-right">
-        <div class="team-pill">
-          <strong><i data-lucide="shield-check"></i> Team Bits &amp; Bytes</strong>
-          <span>Harsh Deep Chak &bull; Pallak Devi</span>
+        <div class="brand-text-block">
+          <div class="brand-title">
+            <span>COMMODITY DERIVATIVES INTELLIGENCE</span>
+            <span class="badge-track">HACK IN HILLS '26 &bull; TRACK 03</span>
+          </div>
+          <div class="brand-sub">MCX GOLD &bull; QUANTITATIVE RELATIVE VALUE &amp; ARBITRAGE ENGINE</div>
         </div>
-        <button id="btnLiveTickToggle" class="btn-theme" style="width:auto; padding:0 14px; gap:8px; font-weight:700; font-size:0.80rem;" title="Start/Pause Real-Time Simulated Tick Stream">
-          <span class="ticker-pulse" id="streamPulse"></span> <span id="streamText">Live Stream</span>
-        </button>
-        <button id="btnThemeToggle" class="btn-theme" title="Toggle Light / Dark Mode">
-          <i data-lucide="sun" id="themeIcon"></i>
-        </button>
-        <button class="btn-run" id="btnRunSimulation"><i data-lucide="play-circle"></i> Recompute Pipeline</button>
       </div>
     </div>
 
-    <!-- Ticker Bar inside Hero -->
-    <div class="ticker-bar">
-      <div class="ticker-label"><span class="ticker-pulse" id="mainTickerPulse"></span> MCX GOLD LIVE</div>
-      <div style="display:flex; gap:24px; white-space:nowrap; overflow-x:auto;">
-        <span id="tickerGOLDM"><strong>GOLDM:</strong> <span id="tickValGOLDM">₹72,450</span> / 10g <small style="color:var(--accent-gold);">(995 Fine)</small></span>
-        <span id="tickerGOLDTEN"><strong>GOLDTEN:</strong> <span id="tickValGOLDTEN">₹72,920</span> / 10g <small style="color:var(--text-muted);">(999 Fine)</small></span>
-        <span id="tickerGOLDGUINEA"><strong>GOLDGUINEA:</strong> <span id="tickValGOLDGUINEA">₹58,360</span> / 8g <small style="color:var(--text-muted);">(999 Fine)</small></span>
-        <span id="tickerGOLDPETAL"><strong>GOLDPETAL:</strong> <span id="tickValGOLDPETAL">₹7,315</span> / 1g <small style="color:var(--text-muted);">(999 Fine)</small></span>
-        <span><strong>Repo Carry (r):</strong> 6.50%</span>
-        <span><strong>Purity Wedge:</strong> 0.402%</span>
+    <div class="topbar-right">
+      <div class="telemetry-pill">
+        <span class="status-indicator live"></span>
+        <span class="telemetry-label">ENGINE: <strong class="telemetry-val">ONLINE</strong></span>
+        <span class="telemetry-sep">|</span>
+        <span class="telemetry-latency">120ms</span>
+      </div>
+
+      <div class="team-badge">
+        <i data-lucide="shield-check" class="team-icon"></i>
+        <span class="team-name">Team Bits &amp; Bytes</span>
+        <span class="team-authors">Harsh Deep Chak &bull; Pallak Devi</span>
+      </div>
+
+      <div class="header-action-group">
+        <button id="btnLiveTickToggle" class="btn-ctrl btn-live" title="Toggle Real-Time Simulated Tick Stream">
+          <span class="ticker-pulse" id="streamPulse"></span>
+          <span id="streamText">Live Stream</span>
+        </button>
+        <button id="btnThemeToggle" class="btn-ctrl btn-icon-only" title="Toggle Light/Dark Terminal Mode">
+          <i data-lucide="sun" id="themeIcon"></i>
+        </button>
+        <button class="btn-ctrl btn-primary" id="btnRunSimulation">
+          <i data-lucide="play" class="btn-icon"></i>
+          <span>Recompute Pipeline</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Guided Storyline Stepper Ribbon -->
-  <nav class="storyline-ribbon">
-    <a href="#section-01" class="step-chip"><span class="num">01</span> CONTRACTS</a>
-    <span class="step-arrow">&rarr;</span>
-    <a href="#section-02" class="step-chip"><span class="num">02</span> NORMALIZATION</a>
-    <span class="step-arrow">&rarr;</span>
-    <a href="#section-03" class="step-chip"><span class="num">03</span> COST OF CARRY</a>
-    <span class="step-arrow">&rarr;</span>
-    <a href="#section-04" class="step-chip"><span class="num">04</span> REAL-WORLD COSTS</a>
-    <span class="step-arrow">&rarr;</span>
-    <a href="#section-05" class="step-chip"><span class="num">05</span> ARBITRAGE SIGNAL</a>
-  </nav>
+  <!-- Live Market Ticker Tape -->
+  <div class="ticker-tape-container">
+    <div class="ticker-tape-header">
+      <span class="ticker-pulse" id="mainTickerPulse"></span>
+      <span class="ticker-tape-title">MCX LIVE</span>
+    </div>
+    <div class="ticker-tape-scroll">
+      <div class="ticker-instrument" id="tickerGOLDM">
+        <span class="inst-sym">GOLDM</span>
+        <span class="inst-price" id="tickValGOLDM">₹72,450</span>
+        <span class="inst-unit">/ 10g</span>
+        <span class="inst-tag gold995">995 Fine</span>
+      </div>
+      <div class="ticker-instrument" id="tickerGOLDTEN">
+        <span class="inst-sym">GOLDTEN</span>
+        <span class="inst-price" id="tickValGOLDTEN">₹72,920</span>
+        <span class="inst-unit">/ 10g</span>
+        <span class="inst-tag">999 Fine</span>
+      </div>
+      <div class="ticker-instrument" id="tickerGOLDGUINEA">
+        <span class="inst-sym">GOLDGUINEA</span>
+        <span class="inst-price" id="tickValGOLDGUINEA">₹58,360</span>
+        <span class="inst-unit">/ 8g</span>
+        <span class="inst-tag">999 Fine</span>
+      </div>
+      <div class="ticker-instrument" id="tickerGOLDPETAL">
+        <span class="inst-sym">GOLDPETAL</span>
+        <span class="inst-price" id="tickValGOLDPETAL">₹7,315</span>
+        <span class="inst-unit">/ 1g</span>
+        <span class="inst-tag">999 Fine</span>
+      </div>
+      <div class="ticker-instrument stat-pill">
+        <span class="stat-lbl">Repo Carry (r):</span>
+        <span class="stat-num">6.50%</span>
+      </div>
+      <div class="ticker-instrument stat-pill">
+        <span class="stat-lbl">Purity Wedge:</span>
+        <span class="stat-num">0.402%</span>
+      </div>
+      <div class="ticker-instrument stat-pill">
+        <span class="stat-lbl">Market Mode:</span>
+        <span class="stat-num green">CONTINUOUS TRADING</span>
+      </div>
+    </div>
+  </div>
 
-  <!-- Main Narrative Container with Real Photography Backdrops -->
-  <main class="app-container">
+  <!-- Main Terminal Shell Layout -->
+  <div class="terminal-shell">
+    
+    <!-- Left Navigation Rail -->
+    <aside class="terminal-sidebar">
+      <div class="sidebar-section-label">NAVIGATION</div>
+      <nav class="sidebar-nav">
+        <a href="#section-signal" class="nav-item active">
+          <i data-lucide="zap"></i>
+          <span>Arbitrage Desk</span>
+        </a>
+        <a href="#section-contracts" class="nav-item">
+          <i data-lucide="layers"></i>
+          <span>Contract Matrix</span>
+        </a>
+        <a href="#section-normalization" class="nav-item">
+          <i data-lucide="refresh-cw"></i>
+          <span>Normalization</span>
+        </a>
+        <a href="#section-carry" class="nav-item">
+          <i data-lucide="trending-up"></i>
+          <span>Cost of Carry</span>
+        </a>
+        <a href="#section-frictions" class="nav-item">
+          <i data-lucide="shield-alert"></i>
+          <span>Friction &amp; Margin</span>
+        </a>
+        <a href="#section-ledger" class="nav-item">
+          <i data-lucide="receipt"></i>
+          <span>Audit Ledger</span>
+        </a>
+        <a href="#section-analytics" class="nav-item">
+          <i data-lucide="cpu"></i>
+          <span>Quant Analytics</span>
+        </a>
+      </nav>
 
-    <!-- ================= SECTION 01: CONTRACTS ================= -->
-    <section class="story-section section-01" id="section-01">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <span class="section-num">01</span>
-          <div>
-            <h2>MCX Gold Contracts</h2>
-            <p class="section-subtitle">4 contracts represent the exact same physical commodity, but differ in purity, lot size, and maturity schedule.</p>
-          </div>
+      <div class="sidebar-telemetry-box">
+        <div class="telemetry-box-title">RISK ENGINES</div>
+        <div class="telemetry-item">
+          <span>MCX SPAN:</span>
+          <strong class="green">60% Spread Disc.</strong>
+        </div>
+        <div class="telemetry-item">
+          <span>Pre-Tender Cut:</span>
+          <strong class="gold">T-5 Days Rule</strong>
+        </div>
+        <div class="telemetry-item">
+          <span>Residual Delta:</span>
+          <strong class="green">0.0g (Exact LCM)</strong>
         </div>
       </div>
+    </aside>
 
-      <!-- Contracts Grid -->
-      <div class="contracts-grid" id="contractsList">
-        <div class="contract-card selected" data-contract="GOLDM">
-          <div class="contract-header">
-            <strong>GOLDM (Mini)</strong>
-            <span class="purity-badge gold995">995 Fineness</span>
-          </div>
-          <div class="contract-price" id="price_GOLDM">₹72,450 <small style="font-size:0.75rem; color:var(--text-muted);">/ 10g</small></div>
-          <div class="contract-specs">
-            <span>Lot: <strong>100 grams</strong></span>
-            <span>Expiry: <strong>05th (Early)</strong></span>
-          </div>
-        </div>
+    <!-- Main Workspace Area -->
+    <main class="terminal-workspace">
 
-        <div class="contract-card" data-contract="GOLDTEN">
-          <div class="contract-header">
-            <strong>GOLDTEN</strong>
-            <span class="purity-badge">999 Fineness</span>
-          </div>
-          <div class="contract-price" id="price_GOLDTEN">₹72,920 <small style="font-size:0.75rem; color:var(--text-muted);">/ 10g</small></div>
-          <div class="contract-specs">
-            <span>Lot: <strong>10 grams</strong></span>
-            <span>Expiry: <strong>28th (Late)</strong></span>
-          </div>
-        </div>
-
-        <div class="contract-card" data-contract="GOLDGUINEA">
-          <div class="contract-header">
-            <strong>GOLDGUINEA</strong>
-            <span class="purity-badge">999 Fineness</span>
-          </div>
-          <div class="contract-price" id="price_GOLDGUINEA">₹58,360 <small style="font-size:0.75rem; color:var(--text-muted);">/ 8g</small></div>
-          <div class="contract-specs">
-            <span>Lot: <strong>8 grams</strong></span>
-            <span>Expiry: <strong>28th (Late)</strong></span>
-          </div>
-        </div>
-
-        <div class="contract-card" data-contract="GOLDPETAL">
-          <div class="contract-header">
-            <strong>GOLDPETAL</strong>
-            <span class="purity-badge">999 Fineness</span>
-          </div>
-          <div class="contract-price" id="price_GOLDPETAL">₹7,315 <small style="font-size:0.75rem; color:var(--text-muted);">/ 1g</small></div>
-          <div class="contract-specs">
-            <span>Lot: <strong>1 gram</strong></span>
-            <span>Expiry: <strong>28th (Late)</strong></span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= SECTION 02: NORMALIZATION ================= -->
-    <section class="story-section section-02" id="section-02">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <span class="section-num">02</span>
-          <div>
-            <h2>Purity &amp; Lot Normalization</h2>
-            <p class="section-subtitle">Converting diverse market quotes into a single universal baseline: <strong>INR per 1 gram of 999 Fine Gold</strong>.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Visual Conversion Arrow -->
-      <div class="norm-visual-row">
-        <div class="norm-box">
-          <h4>Raw Market Quote (<span id="normSelectedSym">GOLDM</span>)</h4>
-          <div class="norm-price" id="normRawDisplay">₹72,450 / 10g</div>
-          <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:6px;">Quotation Unit: 10g &bull; Fineness: 995</p>
-        </div>
-
-        <div class="norm-transform-arrow">
-          <i data-lucide="arrow-right" style="width:32px; height:32px;"></i>
-          <span>&times; (999 / 995) &divide; 10</span>
-        </div>
-
-        <div class="norm-box target-box">
-          <h4>Standardized Cash Benchmark</h4>
-          <div class="norm-price" id="normCleanDisplay">₹7,274.13 / g (999)</div>
-          <p style="font-size:0.82rem; color:var(--accent-gold); margin-top:6px;">&check; Strips out 0.402% physical purity discount</p>
-        </div>
-      </div>
-
-      <!-- Expandable Math Details -->
-      <details class="expandable-details">
-        <summary><span><i data-lucide="code-2" style="width:16px; height:16px; vertical-align:middle; margin-right:6px;"></i> View Normalization Formula &amp; Live Calculator</span> <span>Show Details &darr;</span></summary>
-        <div class="details-content">
-          <div class="math-block">
-            $$\text{Price}_{\text{norm}, i} = \left(\frac{\text{Quoted Price}_i}{\text{Quoted Unit}_i}\right) \times \left(\frac{999}{\text{Purity}_i}\right)$$
-          </div>
-          <div class="calc-input-row" style="display:flex; gap:14px; margin-top:10px; align-items:center; flex-wrap:wrap;">
-            <label style="font-size:0.84rem; color:var(--text-secondary);">Test another contract:</label>
-            <select id="calcContract" class="form-control" style="max-width:280px;">
-              <option value="GOLDM">GOLDM (10g, 995)</option>
-              <option value="GOLDTEN">GOLDTEN (10g, 999)</option>
-              <option value="GOLDGUINEA">GOLDGUINEA (8g, 999)</option>
-              <option value="GOLDPETAL">GOLDPETAL (1g, 999)</option>
-            </select>
-            <input type="number" id="calcRawPrice" class="form-control" value="72450" style="max-width:140px;" />
-            <span id="calcNormalizedOutput" style="font-family:var(--font-mono); color:var(--accent-gold); font-weight:700; font-size:1.1rem;">₹7,274.13 / g</span>
-          </div>
-        </div>
-      </details>
-    </section>
-
-    <!-- ================= SECTION 03: COST OF CARRY ================= -->
-    <section class="story-section section-03" id="section-03">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <span class="section-num">03</span>
-          <div>
-            <h2>Cost of Carry &amp; Maturity Basis Decay</h2>
-            <p class="section-subtitle">Removing the risk-free financing interest across the dynamic maturity countdown ($T - t$) to isolate pure statistical mispricing.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="carry-grid">
-        <div class="carry-kpis">
-          <div class="carry-card">
-            <div class="label">Dynamic Expiry Gap (&Delta;t)</div>
-            <div class="val" id="carryDaysDisplay">24 Days (T-t Decay)</div>
-            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Countdown to active delivery</p>
-          </div>
-          <div class="carry-card">
-            <div class="label">Theoretical Carry Cost</div>
-            <div class="val" id="carryCostDisplay">₹31.14 / g</div>
-            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">At 6.50% Repo Financing</p>
-          </div>
-          <div class="carry-card">
-            <div class="label">Ornstein-Uhlenbeck Half-Life</div>
-            <div class="val" id="statHalfLife">4.2 Days</div>
-            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Mean-reversion horizon</p>
-          </div>
-          <div class="carry-card">
-            <div class="label">ADF Stationarity p-value</div>
-            <div class="val" id="statAdfPVal"><span style="color:var(--signal-green);">0.008 (STATIONARY)</span></div>
-            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Dickey-Fuller Test (p &lt; 0.05)</p>
-          </div>
-        </div>
-
-        <div class="slider-group">
-          <div class="slider-row">
-            <label>Financing Repo Rate (r)</label>
-            <input type="range" id="rateSlider" min="4.0" max="10.0" step="0.25" value="6.50" />
-            <span id="rateVal">6.50%</span>
-          </div>
-          <div class="slider-row">
-            <label>Vault Storage &amp; Lease (s - y)</label>
-            <input type="range" id="carryS" min="0.0" max="1.0" step="0.05" value="0.15" />
-            <span id="carrySVal">0.15%</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Expandable Forward Curve Chart -->
-      <details class="expandable-details">
-        <summary><span><i data-lucide="line-chart" style="width:16px; height:16px; vertical-align:middle; margin-right:6px;"></i> View Dynamic Implied Term Structure Curve</span> <span>Show Chart &darr;</span></summary>
-        <div class="details-content">
-          <div id="chartTermStructure" class="chart-container"></div>
-        </div>
-      </details>
-    </section>
-
-    <!-- ================= SECTION 04: REAL-WORLD TRADING COSTS ================= -->
-    <section class="story-section section-04" id="section-04">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <span class="section-num">04</span>
-          <div>
-            <h2>Real-World Trading Frictions &amp; Discrete Lot ILP</h2>
-            <p class="section-subtitle">Accounting for mandatory Indian statutory taxes, exchange fees, dynamic slippage, and integer lot matching (LCM zero-delta).</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="cost-summary-bar">
-        <div class="cost-left">
-          <h3>Total Friction Drag per Roundtrip</h3>
-          <p>Every relative-value signal must survive statutory taxes + bid-ask spread before generating net profit.</p>
-        </div>
-        <div class="cost-total-pill" id="totalFrictionDisplay">
-          ₹189.20 / ₹10L Turnover
-        </div>
-      </div>
-
-      <div class="friction-chips-grid">
-        <div class="friction-chip">
-          <span>CTT (Commodity Tax)</span>
-          <strong>0.01% on Sell</strong>
-        </div>
-        <div class="friction-chip">
-          <span>Exchange Turnover Fee</span>
-          <strong>0.0021%</strong>
-        </div>
-        <div class="friction-chip">
-          <span>Stamp Duty</span>
-          <strong>0.0020% on Buy</strong>
-        </div>
-        <div class="friction-chip">
-          <span>Brokerage + 18% GST</span>
-          <strong>₹20 / order</strong>
-        </div>
-        <div class="friction-chip">
-          <span>Discrete Lot Matching (ILP)</span>
-          <strong id="lotSolverRatio">1 Lot A : 10 Lot B</strong>
-        </div>
-      </div>
-
-      <!-- Lot Size & Margin Card -->
-      <div class="lot-solver-box mt-3" style="border-radius:var(--radius-sm); padding:16px 20px; margin-top:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <div>
-          <h4 style="color:var(--accent-gold); font-size:0.92rem; margin-bottom:4px;"><i data-lucide="layers" style="width:16px; height:16px; vertical-align:middle; margin-right:6px;"></i> Integer Lot Sizing &amp; Margin Optimizer (SPAN)</h4>
-          <p style="font-size:0.80rem; color:var(--text-secondary);">Guarantees 0.0g unhedged delta using discrete contract granularity.</p>
-        </div>
-        <div style="text-align:right;">
-          <div id="lotSpanMargin" style="font-family:var(--font-mono); font-weight:700; color:var(--text-primary); font-size:1.05rem;">₹58,360 (SPAN w/ Spread Benefit)</div>
-          <small style="color:var(--signal-green); font-size:0.75rem;">&check; Zero Residual Delta Exposure</small>
-        </div>
-      </div>
-
-      <!-- MCX Staggered Delivery & Tender Margin Escalation Card -->
-      <div class="tender-card">
-        <div>
-          <h4 style="color:var(--signal-red); font-size:0.92rem; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
-            <i data-lucide="alert-triangle" style="width:16px; height:16px;"></i> Compulsory Physical Delivery &amp; Tender Margin Surge Escalation
-          </h4>
-          <p style="font-size:0.80rem; color:var(--text-secondary); line-height:1.5;">
-            MCX mandates staggered delivery margins starting <strong>5 days prior to contract expiry (T-5)</strong>. Margins jump from standard <strong>9.0% to 40.0%</strong> (+5%/day), causing severe capital lockup and physical delivery penalty risk.
-          </p>
-        </div>
-        <div style="text-align:right;">
-          <div style="display:inline-block; background:var(--signal-red-bg); border:1px solid var(--signal-red); padding:6px 12px; border-radius:var(--radius-sm); font-size:0.80rem; font-family:var(--font-mono); color:var(--signal-red); font-weight:700;">
-            &check; Automated Squareoff at T-5 Days
-          </div>
-          <p style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">Zero physical vault delivery exposure</p>
-        </div>
-      </div>
-
-      <!-- Expandable P&L Waterfall -->
-      <details class="expandable-details">
-        <summary><span><i data-lucide="bar-chart-2" style="width:16px; height:16px; vertical-align:middle; margin-right:6px;"></i> View Trade P&amp;L Waterfall &amp; Attribution</span> <span>Show Waterfall &darr;</span></summary>
-        <div class="details-content">
-          <div id="chartWaterfall" class="chart-container"></div>
-        </div>
-      </details>
-    </section>
-
-    <!-- ================= SECTION 05: ARBITRAGE SIGNAL ================= -->
-    <section class="story-section section-05" id="section-05">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <span class="section-num">05</span>
-          <div>
-            <h2>Market-Neutral Arbitrage Signal &amp; Execution</h2>
-            <p class="section-subtitle">Statistical convergence signal with proven zero directional market risk (&beta; &approx; 0.00) and strict risk controls.</p>
-          </div>
-        </div>
-        <div style="display:flex; gap:10px; align-items:center;">
-          <select id="pairSelect" class="form-control" style="max-width:280px;">
-            <option value="GOLDM_GOLDTEN">GOLDM (100g) vs GOLDTEN (10g)</option>
-            <option value="GOLDTEN_GOLDPETAL">GOLDTEN (10g) vs GOLDPETAL (1g)</option>
-            <option value="GOLDM_GOLDGUINEA">GOLDM (100g) vs GOLDGUINEA (8g)</option>
-            <option value="GOLDGUINEA_GOLDPETAL">GOLDGUINEA (8g) vs GOLDPETAL (1g)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Dynamic Parameter Tuner Card -->
-      <div class="tuner-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div>
-            <h3 style="font-size:0.98rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-              <i data-lucide="sliders" style="color:var(--accent-gold); width:18px; height:18px;"></i> Dynamic Strategy &amp; Risk Parameter Tuner
-            </h3>
-            <p style="font-size:0.78rem; color:var(--text-secondary);">Interact with hurdle thresholds &amp; lookback to recalculate statistical signals, Sharpe, and trade ledger live.</p>
-          </div>
-          <button class="btn btn-sm btn-secondary" id="btnResetTuner" style="display:inline-flex; align-items:center; gap:5px;"><i data-lucide="rotate-ccw" style="width:13px; height:13px;"></i> Reset Defaults</button>
-        </div>
-        
-        <div class="tuner-grid">
-          <div class="tuner-item">
-            <div class="tuner-item-header">
-              <label>Entry Hurdle (Z<sub>entry</sub>)</label>
-              <span id="lblZEntry">&plusmn;2.0 &sigma;</span>
+      <!-- ================= 01. HERO ARBITRAGE SIGNAL & PARAMETER TUNER ================= -->
+      <section class="panel-section" id="section-signal">
+        <div class="grid-signal-top">
+          
+          <!-- Hero Arbitrage Action Card -->
+          <div class="panel-card hero-signal-panel" id="signalHeroCard">
+            <div class="panel-header-sub">
+              <div class="panel-tag"><i data-lucide="activity"></i> STATISTICAL ARBITRAGE DESK</div>
+              <div class="market-pair-picker">
+                <label for="pairSelect">Active Pair:</label>
+                <select id="pairSelect" class="form-control-compact">
+                  <option value="GOLDM_GOLDTEN">GOLDM (100g) vs GOLDTEN (10g)</option>
+                  <option value="GOLDTEN_GOLDPETAL">GOLDTEN (10g) vs GOLDPETAL (1g)</option>
+                  <option value="GOLDM_GOLDGUINEA">GOLDM (100g) vs GOLDGUINEA (8g)</option>
+                  <option value="GOLDGUINEA_GOLDPETAL">GOLDGUINEA (8g) vs GOLDPETAL (1g)</option>
+                </select>
+              </div>
             </div>
-            <input type="range" id="sliderZEntry" min="1.2" max="3.0" step="0.1" value="2.0" />
-          </div>
 
-          <div class="tuner-item">
-            <div class="tuner-item-header">
-              <label>Exit Hurdle (Z<sub>exit</sub>)</label>
-              <span id="lblZExit">&plusmn;0.5 &sigma;</span>
+            <div class="signal-core-row">
+              <div class="signal-badge-wrapper">
+                <div class="signal-action-badge" id="signalActionBadge">
+                  <i data-lucide="check-circle" class="badge-icon"></i>
+                  <span id="signalActionText">BUY GOLDM / SELL GOLDTEN</span>
+                </div>
+                <p class="signal-narrative" id="signalExplanation">
+                  Current carry-adjusted spread has diverged to <strong id="heroZText">-2.34 σ</strong> (exceeding ±2.0 σ trigger hurdle). Target mean reversion generates <strong id="heroEdgeText">+₹8.42 / g</strong> net profit post-friction.
+                </p>
+              </div>
+
+              <!-- Quad Quantitative Risk KPIs -->
+              <div class="kpi-quad-grid">
+                <div class="kpi-cell">
+                  <div class="kpi-label">Current Z-Score</div>
+                  <div class="kpi-value" id="kpiZScore">-2.34 σ</div>
+                  <div class="kpi-sub">Hurdle: &plusmn;2.0 &sigma; | Stop: &plusmn;3.5 &sigma;</div>
+                </div>
+                <div class="kpi-cell">
+                  <div class="kpi-label">Expected Net Edge</div>
+                  <div class="kpi-value green" id="kpiNetEdge">+₹8.42 / g</div>
+                  <div class="kpi-sub">Survives All Frictions</div>
+                </div>
+                <div class="kpi-cell">
+                  <div class="kpi-label">Beta to Gold Spot</div>
+                  <div class="kpi-value" id="btBeta">0.012 &approx; 0.00</div>
+                  <div class="kpi-sub">Market Neutral</div>
+                </div>
+                <div class="kpi-cell">
+                  <div class="kpi-label">Sharpe Ratio</div>
+                  <div class="kpi-value green" id="btSharpe">2.41</div>
+                  <div class="kpi-sub">Walk-Forward Backtest</div>
+                </div>
+              </div>
             </div>
-            <input type="range" id="sliderZExit" min="0.0" max="1.2" step="0.1" value="0.5" />
           </div>
 
-          <div class="tuner-item">
-            <div class="tuner-item-header">
-              <label>Stop-Loss (Z<sub>stop</sub>)</label>
-              <span id="lblZStop">&plusmn;3.5 &sigma;</span>
+          <!-- Dynamic Parameter Tuner Card -->
+          <div class="panel-card tuner-panel">
+            <div class="panel-header-sub">
+              <div class="panel-tag"><i data-lucide="sliders"></i> DYNAMIC RISK PARAMETER TUNER</div>
+              <button class="btn-link-reset" id="btnResetTuner">
+                <i data-lucide="rotate-ccw"></i> Reset
+              </button>
             </div>
-            <input type="range" id="sliderZStop" min="2.5" max="4.5" step="0.1" value="3.5" />
-          </div>
 
-          <div class="tuner-item">
-            <div class="tuner-item-header">
-              <label>Lookback Window</label>
-              <span id="lblLookback">60 Days</span>
+            <div class="tuner-sliders-list">
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="sliderZEntry">Entry Hurdle (Z<sub>entry</sub>)</label>
+                  <span id="lblZEntry">&plusmn;2.0 &sigma;</span>
+                </div>
+                <input type="range" id="sliderZEntry" min="1.2" max="3.0" step="0.1" value="2.0" />
+              </div>
+
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="sliderZExit">Exit Hurdle (Z<sub>exit</sub>)</label>
+                  <span id="lblZExit">&plusmn;0.5 &sigma;</span>
+                </div>
+                <input type="range" id="sliderZExit" min="0.0" max="1.2" step="0.1" value="0.5" />
+              </div>
+
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="sliderZStop">Stop-Loss (Z<sub>stop</sub>)</label>
+                  <span id="lblZStop">&plusmn;3.5 &sigma;</span>
+                </div>
+                <input type="range" id="sliderZStop" min="2.5" max="4.5" step="0.1" value="3.5" />
+              </div>
+
+              <div class="tuner-slider-unit">
+                <div class="slider-head">
+                  <label for="sliderLookback">Lookback Window</label>
+                  <span id="lblLookback">60 Days</span>
+                </div>
+                <input type="range" id="sliderLookback" min="30" max="120" step="5" value="60" />
+              </div>
             </div>
-            <input type="range" id="sliderLookback" min="30" max="120" step="5" value="60" />
           </div>
+
         </div>
-      </div>
+      </section>
 
-      <!-- Signal Hero Card -->
-      <div class="signal-hero-card" id="signalHeroCard">
-        <div class="signal-banner-left">
-          <div class="signal-action-badge" id="signalActionBadge">
-            <i data-lucide="check-circle"></i> <span id="signalActionText">BUY GOLDM / SELL GOLDTEN</span>
+      <!-- ================= 02. PRIMARY CHARTS: Z-SCORE & FORWARD CURVE ================= -->
+      <section class="panel-section">
+        <div class="grid-split-charts">
+          
+          <!-- Main Z-Score Cointegration Chart -->
+          <div class="panel-card chart-panel">
+            <div class="panel-header-clean">
+              <div class="chart-header-left">
+                <h3>Dynamic Carry-Adjusted Z-Score Spread &amp; Thresholds</h3>
+                <span class="sub-caption">Real-time cointegration residual tracking with active &plusmn;2.0&sigma; entry hurdles and &plusmn;3.5&sigma; stop-loss gates</span>
+              </div>
+              <div class="chart-status-pill">
+                <span class="pill-dot green"></span> Live Model
+              </div>
+            </div>
+            <div id="chartZScore" class="chart-container-terminal"></div>
           </div>
-          <p class="signal-explanation" id="signalExplanation">
-            Current carry-adjusted spread has diverged to <strong id="heroZText">-2.34 σ</strong> (exceeding ±2.0 σ trigger hurdle). Target mean reversion generates <strong id="heroEdgeText">+₹8.42 / g</strong> net profit post-friction.
-          </p>
+
+          <!-- Dynamic Term Structure & Carry Sliders -->
+          <div class="panel-card chart-panel">
+            <div class="panel-header-clean">
+              <div class="chart-header-left">
+                <h3>Implied Term Structure Curve</h3>
+                <span class="sub-caption">Cash Spot to Far Month maturities ($T - t$)</span>
+              </div>
+              <div class="chart-status-pill">
+                <span class="pill-dot gold"></span> Repo Linked
+              </div>
+            </div>
+            <div id="chartTermStructure" class="chart-container-compact"></div>
+            
+            <div class="carry-slider-inline-group">
+              <div class="slider-inline-unit">
+                <div class="slider-inline-head">
+                  <label for="rateSlider">Financing Repo Rate (r):</label>
+                  <span id="rateVal">6.50%</span>
+                </div>
+                <input type="range" id="rateSlider" min="4.0" max="10.0" step="0.25" value="6.50" />
+              </div>
+              <div class="slider-inline-unit">
+                <div class="slider-inline-head">
+                  <label for="carryS">Vault Storage &amp; Lease (s - y):</label>
+                  <span id="carrySVal">0.15%</span>
+                </div>
+                <input type="range" id="carryS" min="0.0" max="1.0" step="0.05" value="0.15" />
+              </div>
+            </div>
+          </div>
+
         </div>
+      </section>
 
-        <div class="signal-kpi-quad">
-          <div class="sig-quad-box">
-            <div class="label">Current Z-Score</div>
-            <div class="val" id="kpiZScore">-2.34 σ</div>
-            <div class="sub">Hurdle: &plusmn;2.0 &sigma; | Stop: &plusmn;3.5 &sigma;</div>
+      <!-- ================= 03. CONTRACT MATRIX & NORMALIZATION PIPELINE ================= -->
+      <section class="panel-section" id="section-contracts">
+        <div class="grid-contracts-normalization">
+          
+          <!-- Institutional Contract Comparison Matrix -->
+          <div class="panel-card contracts-matrix-panel">
+            <div class="panel-header-clean">
+              <div>
+                <h3>MCX Gold Derivatives Contract Matrix</h3>
+                <span class="sub-caption">4 specifications on physical bullion with differing purity, lot sizes, and settlement cycles</span>
+              </div>
+              <span class="badge-hint">Click row to inspect</span>
+            </div>
+
+            <div class="contracts-matrix-table-wrapper" id="contractsList">
+              <table class="terminal-table">
+                <thead>
+                  <tr>
+                    <th>Contract</th>
+                    <th>Quotation</th>
+                    <th>Lot Size</th>
+                    <th>Fineness</th>
+                    <th>Expiry Cycle</th>
+                    <th>Live Quoted Price</th>
+                    <th>Benchmark (₹/g 999)</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="contract-card selected" data-contract="GOLDM">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>GOLDM</strong>
+                        <small>Gold Mini</small>
+                      </div>
+                    </td>
+                    <td>10g</td>
+                    <td><strong>100g</strong></td>
+                    <td><span class="purity-badge gold995">995 Fine</span></td>
+                    <td>05th (Early)</td>
+                    <td><span class="cell-price" id="price_GOLDM">₹72,450</span></td>
+                    <td><strong class="gold">₹7,274.13 / g</strong></td>
+                    <td><span class="status-chip long">LONG SPREAD</span></td>
+                  </tr>
+
+                  <tr class="contract-card" data-contract="GOLDTEN">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>GOLDTEN</strong>
+                        <small>Gold Ten</small>
+                      </div>
+                    </td>
+                    <td>10g</td>
+                    <td><strong>10g</strong></td>
+                    <td><span class="purity-badge">999 Fine</span></td>
+                    <td>28th (Late)</td>
+                    <td><span class="cell-price" id="price_GOLDTEN">₹72,920</span></td>
+                    <td><strong>₹7,292.00 / g</strong></td>
+                    <td><span class="status-chip short">SHORT SPREAD</span></td>
+                  </tr>
+
+                  <tr class="contract-card" data-contract="GOLDGUINEA">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>GOLDGUINEA</strong>
+                        <small>Gold Guinea</small>
+                      </div>
+                    </td>
+                    <td>8g</td>
+                    <td><strong>8g</strong></td>
+                    <td><span class="purity-badge">999 Fine</span></td>
+                    <td>28th (Late)</td>
+                    <td><span class="cell-price" id="price_GOLDGUINEA">₹58,360</span></td>
+                    <td><strong>₹7,295.00 / g</strong></td>
+                    <td><span class="status-chip neutral">MONITOR</span></td>
+                  </tr>
+
+                  <tr class="contract-card" data-contract="GOLDPETAL">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>GOLDPETAL</strong>
+                        <small>Gold Petal</small>
+                      </div>
+                    </td>
+                    <td>1g</td>
+                    <td><strong>1g</strong></td>
+                    <td><span class="purity-badge">999 Fine</span></td>
+                    <td>28th (Late)</td>
+                    <td><span class="cell-price" id="price_GOLDPETAL">₹7,315</span></td>
+                    <td><strong>₹7,315.00 / g</strong></td>
+                    <td><span class="status-chip neutral">MONITOR</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div class="sig-quad-box">
-            <div class="label">Expected Net Edge</div>
-            <div class="val green" id="kpiNetEdge">+₹8.42 / g</div>
-            <div class="sub">Survives All Frictions</div>
+
+          <!-- Purity & Lot Normalization Panel -->
+          <div class="panel-card normalization-panel" id="section-normalization">
+            <div class="panel-header-clean">
+              <div>
+                <h3>Standardized Cash Benchmark Pipeline</h3>
+                <span class="sub-caption">Purity &amp; Granularity Normalization to universal <strong>INR / 1g 999 Fine Gold</strong></span>
+              </div>
+            </div>
+
+            <div class="normalization-pipeline-flow">
+              <div class="flow-step">
+                <div class="flow-step-label">RAW QUOTE (<span id="normSelectedSym">GOLDM</span>)</div>
+                <div class="flow-step-val" id="normRawDisplay">₹72,450 / 10g</div>
+                <div class="flow-step-sub">Quotation Unit: 10g &bull; Fineness: 995</div>
+              </div>
+
+              <div class="flow-connector">
+                <i data-lucide="arrow-right" class="connector-arrow"></i>
+                <span>&times; (999 / 995) &divide; 10</span>
+              </div>
+
+              <div class="flow-step target">
+                <div class="flow-step-label">STANDARDIZED BENCHMARK</div>
+                <div class="flow-step-val highlight" id="normCleanDisplay">₹7,274.13 / g (999)</div>
+                <div class="flow-step-sub green">&check; Strips 0.402% physical purity wedge</div>
+              </div>
+            </div>
+
+            <!-- Normalization Live Math Drawer -->
+            <details class="terminal-accordion">
+              <summary>
+                <span><i data-lucide="code-2"></i> View Normalization Formula &amp; Live Interactive Calculator</span>
+                <span class="accordion-arrow">&darr;</span>
+              </summary>
+              <div class="accordion-body">
+                <div class="math-block">
+                  $$\text{Price}_{\text{norm}, i} = \left(\frac{\text{Quoted Price}_i}{\text{Quoted Unit}_i}\right) \times \left(\frac{999}{\text{Purity}_i}\right)$$
+                </div>
+                <div class="calc-input-row">
+                  <label for="calcContract">Contract:</label>
+                  <select id="calcContract" class="form-control-compact">
+                    <option value="GOLDM">GOLDM (10g, 995)</option>
+                    <option value="GOLDTEN">GOLDTEN (10g, 999)</option>
+                    <option value="GOLDGUINEA">GOLDGUINEA (8g, 999)</option>
+                    <option value="GOLDPETAL">GOLDPETAL (1g, 999)</option>
+                  </select>
+                  <label for="calcRawPrice">Raw Price (₹):</label>
+                  <input type="number" id="calcRawPrice" class="form-control-compact" value="72450" />
+                  <span class="calc-output-badge" id="calcNormalizedOutput">₹7,274.13 / g</span>
+                </div>
+              </div>
+            </details>
           </div>
-          <div class="sig-quad-box">
-            <div class="label">Beta to Gold Spot</div>
-            <div class="val" id="btBeta">0.012 &approx; 0.00</div>
-            <div class="sub">Market Neutral</div>
-          </div>
-          <div class="sig-quad-box">
-            <div class="label">Sharpe Ratio</div>
-            <div class="val green" id="btSharpe">2.41</div>
-            <div class="sub">Out-of-Sample Walk-Forward</div>
-          </div>
+
         </div>
-      </div>
+      </section>
 
-      <!-- Main Z-Score & Cointegration Chart -->
-      <div class="chart-container" id="chartZScore" style="height:380px;"></div>
-
-      <!-- Live Simulated Trade History Table & CSV Export -->
-      <div class="trade-history-box" style="margin-top:24px; border-radius:var(--radius-md); padding:20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-          <div>
-            <h3 style="font-size:1.05rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-              <i data-lucide="receipt" style="color:var(--accent-gold); width:18px; height:18px;"></i> Algorithmic Trade Execution Audit Ledger
-            </h3>
-            <p style="font-size:0.80rem; color:var(--text-secondary); margin-top:2px;">Audited fills, friction deductions, stop-losses, and pre-tender squareoffs.</p>
+      <!-- ================= 04. COST OF CARRY & QUANT STATISTICAL METRICS ================= -->
+      <section class="panel-section" id="section-carry">
+        <div class="grid-carry-metrics">
+          
+          <div class="panel-card carry-metric-card">
+            <div class="metric-card-top">
+              <span class="metric-card-lbl">Dynamic Expiry Countdown</span>
+              <i data-lucide="clock" class="metric-card-icon"></i>
+            </div>
+            <div class="metric-card-num" id="carryDaysDisplay">24 Days (T-t Decay)</div>
+            <div class="metric-card-desc">Active maturity basis convergence horizon</div>
           </div>
-          <button class="btn btn-primary" id="btnExportTrades" style="display:inline-flex; align-items:center; gap:6px; font-size:0.82rem;">
-            <i data-lucide="download"></i> Export Trade Sheet (CSV)
-          </button>
-        </div>
 
-        <div class="quant-table-wrapper" style="overflow-x:auto;">
-          <table class="quant-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
-            <thead>
-              <tr style="border-bottom:1px solid var(--border-glass); text-align:left; color:var(--text-muted);">
-                <th style="padding:8px;">Trade #</th>
-                <th style="padding:8px;">Holding Period</th>
-                <th style="padding:8px;">Action / Pair</th>
-                <th style="padding:8px;">Spread Entry &rarr; Exit</th>
-                <th style="padding:8px;">Net PnL (Post-Tax)</th>
-                <th style="padding:8px;">Exit Rule Trigger</th>
-              </tr>
-            </thead>
-            <tbody id="tradeTableBody">
-              <!-- Populated by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
+          <div class="panel-card carry-metric-card">
+            <div class="metric-card-top">
+              <span class="metric-card-lbl">Theoretical Financing Carry</span>
+              <i data-lucide="percent" class="metric-card-icon"></i>
+            </div>
+            <div class="metric-card-num" id="carryCostDisplay">₹31.14 / g</div>
+            <div class="metric-card-desc">At 6.50% Repo Rate &bull; $F = S \cdot e^{(r+s-y)\Delta t}$</div>
+          </div>
 
-      <!-- Expandable Deep Analytics & Whitepaper -->
-      <details class="expandable-details" style="margin-top:20px;">
-        <summary><span><i data-lucide="database" style="width:16px; height:16px; vertical-align:middle; margin-right:6px;"></i> Normalized Price Curves, Alpha Regression &amp; MCX Bhavcopy Ingestion</span> <span>Expand Quant Suite &darr;</span></summary>
-        <div class="details-content">
-          <div class="grid-2-col" style="margin-bottom:20px;">
+          <div class="panel-card carry-metric-card">
+            <div class="metric-card-top">
+              <span class="metric-card-lbl">Ornstein-Uhlenbeck Half-Life</span>
+              <i data-lucide="timer" class="metric-card-icon"></i>
+            </div>
+            <div class="metric-card-num" id="statHalfLife">4.2 Days</div>
+            <div class="metric-card-desc">Mean reversion speed ($\tau = \ln 2 / \theta$)</div>
+          </div>
+
+          <div class="panel-card carry-metric-card">
+            <div class="metric-card-top">
+              <span class="metric-card-lbl">ADF Stationarity Test</span>
+              <i data-lucide="check-circle-2" class="metric-card-icon"></i>
+            </div>
+            <div class="metric-card-num green" id="statAdfPVal">0.008 (STATIONARY)</div>
+            <div class="metric-card-desc">Dickey-Fuller Unit Root Test ($p &lt; 0.05$)</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= 05. FRICTION DRAG, SPAN LOT SOLVER & DELIVERY RISK ================= -->
+      <section class="panel-section" id="section-frictions">
+        <div class="panel-card frictions-container-panel">
+          
+          <div class="friction-summary-strip">
+            <div class="summary-strip-left">
+              <div class="panel-tag"><i data-lucide="receipt"></i> STATUTORY FRICTION DRAG &amp; SPAN LOT OPTIMIZER</div>
+              <p>Every trade must survive Indian exchange turnover fees, CTT, stamp duty, brokerage, and bid-ask slippage before booking net alpha.</p>
+            </div>
+            <div class="summary-strip-right">
+              <span class="friction-pill-label">Total Friction Cost:</span>
+              <span class="friction-pill-val" id="totalFrictionDisplay">₹189.20 / ₹10L Turnover</span>
+            </div>
+          </div>
+
+          <div class="friction-chips-grid">
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">Commodity Transaction Tax (CTT)</span>
+              <strong class="chip-tax-val">0.01% on Sell</strong>
+            </div>
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">MCX Exchange Turnover Fee</span>
+              <strong class="chip-tax-val">0.0021%</strong>
+            </div>
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">State Stamp Duty</span>
+              <strong class="chip-tax-val">0.0020% on Buy</strong>
+            </div>
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">Brokerage + 18% GST</span>
+              <strong class="chip-tax-val">₹20 / Executed Order</strong>
+            </div>
+            <div class="friction-chip-item">
+              <span class="chip-tax-name">Discrete Lot Ratio (ILP)</span>
+              <strong class="chip-tax-val gold" id="lotSolverRatio">1 Lot A : 10 Lot B</strong>
+            </div>
+          </div>
+
+          <!-- Risk & Delivery Cards Split -->
+          <div class="risk-controls-split">
+            <!-- Discrete Lot & SPAN Card -->
+            <div class="risk-sub-card">
+              <div class="risk-card-head">
+                <i data-lucide="layers" class="gold"></i>
+                <h4>Integer Linear Programming (ILP) Zero-Delta Sizing</h4>
+              </div>
+              <p>Guarantees exact 0.0g residual unhedged commodity delta using discrete contract granularity.</p>
+              <div class="risk-metric-foot">
+                <span class="label">SPAN Margin Requirement:</span>
+                <strong id="lotSpanMargin" class="val">₹58,360 (SPAN w/ 60% Spread Discount)</strong>
+              </div>
+            </div>
+
+            <!-- Compulsory Delivery & Tender Escalation Card -->
+            <div class="risk-sub-card alert-risk">
+              <div class="risk-card-head">
+                <i data-lucide="alert-triangle" class="red"></i>
+                <h4 class="red">Compulsory Delivery &amp; Tender Margin Surge (T-5 Days)</h4>
+              </div>
+              <p>MCX mandates staggered delivery margins starting 5 days prior to expiry. Margins escalate from <strong>9.0% to 40.0%</strong> (+5%/day), risking capital lockup and vault delivery penalties.</p>
+              <div class="risk-metric-foot">
+                <span class="status-chip-alert">&check; Automated Pre-Tender Squareoff at T-5 Days</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- P&L Waterfall Attribution Chart Accordion -->
+          <details class="terminal-accordion" style="margin-top:14px;">
+            <summary>
+              <span><i data-lucide="bar-chart-2"></i> View Trade P&amp;L Waterfall &amp; Statutory Attribution</span>
+              <span class="accordion-arrow">&darr;</span>
+            </summary>
+            <div class="accordion-body">
+              <div id="chartWaterfall" class="chart-container-compact"></div>
+            </div>
+          </details>
+
+        </div>
+      </section>
+
+      <!-- ================= 06. AUDITED TRADE EXECUTION LEDGER ================= -->
+      <section class="panel-section" id="section-ledger">
+        <div class="panel-card trade-ledger-panel">
+          <div class="panel-header-clean">
             <div>
-              <h4 style="font-size:0.88rem; color:var(--text-primary); margin-bottom:8px;">Normalized Price Series (INR / 1g 999)</h4>
-              <div id="chartNormalizedPrices" style="height:280px;"></div>
+              <h3>Algorithmic Trade Execution Audit Ledger</h3>
+              <span class="sub-caption">Historical simulated trade entries, exits, holding durations, post-friction net PnL, and exit triggers</span>
             </div>
-            <div>
-              <h4 style="font-size:0.88rem; color:var(--text-primary); margin-bottom:8px;">OLS Regression Proof (&beta; &approx; 0.00)</h4>
-              <div id="chartRegression" style="height:280px;"></div>
-            </div>
-          </div>
-
-          <!-- Dynamic Kalman Filter Hedge Ratio Display -->
-          <div style="margin-bottom:20px;">
-            <h4 style="font-size:0.88rem; color:var(--text-primary); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
-              <i data-lucide="activity" style="color:var(--accent-gold); width:16px; height:16px;"></i> Dynamic Kalman Filter State-Space Tracking (&beta;<sub>t</sub> Hedge Ratio Drift)
-            </h4>
-            <div id="chartKalman" style="height:280px;"></div>
-          </div>
-
-          <!-- Drag and Drop Real CSV Uploader with 1-Click Sample Generator -->
-          <div style="display:flex; justify-content:space-between; align-items:center; margin:16px 0 8px; flex-wrap:wrap; gap:10px;">
-            <h4 style="font-size:0.88rem; color:var(--text-primary); margin:0;">Upload MCX Bhavcopy CSV File</h4>
-            <button class="btn btn-sm btn-secondary" id="btnDownloadSampleCsv" style="display:inline-flex; align-items:center; gap:6px; font-weight:700;">
-              <i data-lucide="file-down"></i> Download Sample MCX Bhavcopy (.csv)
+            <button class="btn-ctrl btn-secondary" id="btnExportTrades">
+              <i data-lucide="download"></i> Export Trade Sheet (CSV)
             </button>
           </div>
-          <div class="file-drop-zone" id="fileDropZone" style="border:2px dashed var(--accent-gold-border); background:var(--input-bg); border-radius:var(--radius-sm); padding:24px; text-align:center; cursor:pointer; margin-bottom:16px; transition:border-color 0.2s ease;">
-            <i data-lucide="upload-cloud" style="width:36px; height:36px; color:var(--accent-gold); margin-bottom:8px;"></i>
-            <p style="font-size:0.88rem; font-weight:600; color:var(--text-primary);">Drag &amp; Drop MCX Bhavcopy (.csv, .txt) here, or click to browse</p>
-            <span style="font-size:0.75rem; color:var(--text-muted);">Supports raw multi-contract settlements, trade logs, and holiday format variations</span>
-            <input type="file" id="csvFileInput" accept=".csv,.txt" style="display:none;" />
-          </div>
 
-          <h4 style="font-size:0.88rem; color:var(--text-primary); margin:16px 0 8px;">Interactive MCX Bhavcopy Anomaly Sanitizer</h4>
-          <div class="preset-btn-group" style="margin-bottom:10px;">
-            <button class="btn btn-sm btn-secondary" data-preset="holiday">Holiday Quirk</button>
-            <button class="btn btn-sm btn-secondary" data-preset="dates">Date Mismatch</button>
-            <button class="btn btn-sm btn-secondary" data-preset="space">Space Padding</button>
-            <button class="btn btn-sm btn-secondary" data-preset="zerovol">Zero Volume</button>
+          <div class="quant-table-wrapper">
+            <table class="terminal-table quant-table">
+              <thead>
+                <tr>
+                  <th>Trade #</th>
+                  <th>Holding Window</th>
+                  <th>Action / Spread Pair</th>
+                  <th>Entry &rarr; Exit Spread</th>
+                  <th>Net Realized PnL (Post-Tax)</th>
+                  <th>Exit Rule Trigger</th>
+                </tr>
+              </thead>
+              <tbody id="tradeTableBody">
+                <!-- Populated dynamically by app.js -->
+              </tbody>
+            </table>
           </div>
-          <div class="sanitizer-input-row" style="display:flex; gap:10px;">
-            <input type="text" id="rawCsvInput" class="form-control font-mono" value=' "GOLDM   " , "04SEP2026" , 72450.00 , 10 , 995 , 0 ' />
-            <button class="btn btn-primary" id="btnSanitize" style="white-space:nowrap;"><i data-lucide="zap"></i> Run Sanitizer</button>
-          </div>
-          <pre id="sanitizerOutput" class="json-output mt-2">Click "Run Sanitizer" to inspect standardized ETL output...</pre>
         </div>
-      </details>
-    </section>
+      </section>
 
-  </main>
+      <!-- ================= 07. DEEP QUANT RESEARCH & BHAVCOPY ETL SUITE ================= -->
+      <section class="panel-section" id="section-analytics">
+        <details class="terminal-accordion active-default" open>
+          <summary>
+            <span><i data-lucide="database"></i> Deep Quant Analytics Suite: Dynamic Kalman Filter, OLS Regression &amp; MCX Bhavcopy ETL</span>
+            <span class="accordion-arrow">&darr;</span>
+          </summary>
+          <div class="accordion-body">
+            
+            <div class="grid-split-charts" style="margin-bottom:18px;">
+              <div class="panel-card-inner">
+                <h4 class="inner-chart-title">Normalized Price Series (INR / 1g 999 Baseline)</h4>
+                <div id="chartNormalizedPrices" class="chart-container-compact"></div>
+              </div>
+              <div class="panel-card-inner">
+                <h4 class="inner-chart-title">OLS Return Regression Proof (&beta; &approx; 0.00 Market Neutrality)</h4>
+                <div id="chartRegression" class="chart-container-compact"></div>
+              </div>
+            </div>
 
-  <!-- Footer -->
-  <footer class="app-footer">
+            <!-- Dynamic Kalman Filter State-Space Tracking -->
+            <div class="panel-card-inner" style="margin-bottom:20px;">
+              <div class="panel-header-sub">
+                <div class="panel-tag"><i data-lucide="activity"></i> KALMAN FILTER ONLINE STATE TRACKING (&beta;<sub>t</sub> HEDGE RATIO DRIFT)</div>
+                <span class="badge-hint">Continuous Recursive State Estimation</span>
+              </div>
+              <div id="chartKalman" class="chart-container-compact"></div>
+            </div>
+
+            <!-- MCX Bhavcopy CSV Uploader & Ingestion -->
+            <div class="etl-container-box">
+              <div class="panel-header-clean">
+                <div>
+                  <h4 style="margin:0; font-size:0.95rem; font-weight:700;">MCX Bhavcopy CSV Ingestion Engine</h4>
+                  <span class="sub-caption">Drag-and-drop raw multi-contract exchange settlement files for instant end-to-end backtesting</span>
+                </div>
+                <button class="btn-ctrl btn-secondary" id="btnDownloadSampleCsv">
+                  <i data-lucide="file-down"></i> Download Sample Bhavcopy (.csv)
+                </button>
+              </div>
+
+              <div class="file-drop-zone" id="fileDropZone">
+                <i data-lucide="upload-cloud" class="drop-icon"></i>
+                <p class="drop-title">Drag &amp; Drop MCX Bhavcopy (.csv, .txt) here, or click to browse</p>
+                <span class="drop-sub">Parses raw contract settlements, volume filters, date formats, and holiday anomalies</span>
+                <input type="file" id="csvFileInput" accept=".csv,.txt" style="display:none;" />
+              </div>
+
+              <!-- Interactive Anomaly Sanitizer Sandbox -->
+              <div class="sanitizer-box">
+                <div class="sanitizer-head">
+                  <h5 style="margin:0; font-size:0.86rem; color:var(--text-primary); font-weight:700;">Interactive MCX Bhavcopy Anomaly Sanitizer</h5>
+                  <div class="preset-btn-group">
+                    <button class="btn-preset" data-preset="holiday">Holiday Quirk</button>
+                    <button class="btn-preset" data-preset="dates">Date Mismatch</button>
+                    <button class="btn-preset" data-preset="space">Space Padding</button>
+                    <button class="btn-preset" data-preset="zerovol">Zero Volume</button>
+                  </div>
+                </div>
+
+                <div class="sanitizer-input-row">
+                  <input type="text" id="rawCsvInput" class="form-control-compact font-mono" value=' "GOLDM   " , "04SEP2026" , 72450.00 , 10 , 995 , 0 ' />
+                  <button class="btn-ctrl btn-primary" id="btnSanitize"><i data-lucide="zap"></i> Run Sanitizer</button>
+                </div>
+                <pre id="sanitizerOutput" class="json-output">Click "Run Sanitizer" to inspect standardized ETL output...</pre>
+              </div>
+
+            </div>
+
+          </div>
+        </details>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Terminal Footer -->
+  <footer class="terminal-footer">
     <div class="footer-inner">
-      <span>&copy; 2026 Team Bits and Bytes (Harsh Deep Chak &amp; Pallak Devi) &bull; Hack in Hills '26 Track 03</span>
-      <span><strong>Core Mission:</strong> Transforming raw exchange settlement data into defensible, cost-surviving relative-value signals.</span>
+      <div class="footer-left">
+        <strong>&copy; 2026 Team Bits and Bytes</strong> &bull; Harsh Deep Chak &amp; Pallak Devi &bull; Hack in Hills '26 Track 03
+      </div>
+      <div class="footer-right">
+        <span><strong>Core Mandate:</strong> Defensible, cost-surviving market-neutral relative value arbitrage across MCX Gold derivatives.</span>
+      </div>
     </div>
   </footer>
 

@@ -611,23 +611,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const plotLayoutBase = {
       paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: isLight ? '#ffffff' : '#0e1118',
-      font: { family: 'Plus Jakarta Sans', color: isLight ? '#1e293b' : '#94a3b8', size: 11 },
-      margin: { l: 50, r: 20, t: 20, b: 36 },
+      plot_bgcolor: isLight ? '#FAF9F5' : '#0D1117',
+      font: { family: 'JetBrains Mono, Inter, sans-serif', color: isLight ? '#62676A' : '#94A3B8', size: 10 },
+      margin: { l: 46, r: 16, t: 16, b: 32 },
       xaxis: { 
-        gridcolor: isLight ? '#e2e8f0' : '#1e2432', 
-        linecolor: isLight ? '#94a3b8' : '#283244', 
-        zerolinecolor: isLight ? '#94a3b8' : '#283244' 
+        gridcolor: isLight ? '#E8E3D8' : 'rgba(255, 255, 255, 0.05)', 
+        linecolor: isLight ? '#D8D2C6' : 'rgba(255, 255, 255, 0.12)', 
+        zerolinecolor: isLight ? '#D8D2C6' : 'rgba(255, 255, 255, 0.12)' 
       },
       yaxis: { 
-        gridcolor: isLight ? '#e2e8f0' : '#1e2432', 
-        linecolor: isLight ? '#94a3b8' : '#283244', 
-        zerolinecolor: isLight ? '#94a3b8' : '#283244' 
+        gridcolor: isLight ? '#E8E3D8' : 'rgba(255, 255, 255, 0.05)', 
+        linecolor: isLight ? '#D8D2C6' : 'rgba(255, 255, 255, 0.12)', 
+        zerolinecolor: isLight ? '#D8D2C6' : 'rgba(255, 255, 255, 0.12)' 
       },
       legend: { 
         orientation: 'h', 
-        y: 1.12, 
-        font: { size: 11, color: isLight ? '#090d16' : '#f8fafc' } 
+        y: 1.14, 
+        font: { size: 10, color: isLight ? '#17191A' : '#F8FAFC' } 
       }
     };
 
