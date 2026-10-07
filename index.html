@@ -182,7 +182,7 @@
           <div class="math-block">
             $$\text{Price}_{\text{norm}, i} = \left(\frac{\text{Quoted Price}_i}{\text{Quoted Unit}_i}\right) \times \left(\frac{999}{\text{Purity}_i}\right)$$
           </div>
-          <div style="display:flex; gap:14px; margin-top:10px; align-items:center; flex-wrap:wrap;">
+          <div class="calc-input-row" style="display:flex; gap:14px; margin-top:10px; align-items:center; flex-wrap:wrap;">
             <label style="font-size:0.84rem; color:var(--text-secondary);">Test another contract:</label>
             <select id="calcContract" class="form-control" style="max-width:280px;">
               <option value="GOLDM">GOLDM (10g, 995)</option>
@@ -459,7 +459,7 @@
           </button>
         </div>
 
-        <div style="overflow-x:auto;">
+        <div class="quant-table-wrapper" style="overflow-x:auto;">
           <table class="quant-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
             <thead>
               <tr style="border-bottom:1px solid var(--border-glass); text-align:left; color:var(--text-muted);">
@@ -522,7 +522,7 @@
             <button class="btn btn-sm btn-secondary" data-preset="space">Space Padding</button>
             <button class="btn btn-sm btn-secondary" data-preset="zerovol">Zero Volume</button>
           </div>
-          <div style="display:flex; gap:10px;">
+          <div class="sanitizer-input-row" style="display:flex; gap:10px;">
             <input type="text" id="rawCsvInput" class="form-control font-mono" value=' "GOLDM   " , "04SEP2026" , 72450.00 , 10 , 995 , 0 ' />
             <button class="btn btn-primary" id="btnSanitize" style="white-space:nowrap;"><i data-lucide="zap"></i> Run Sanitizer</button>
           </div>

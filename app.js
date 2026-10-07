@@ -1214,4 +1214,30 @@ document.addEventListener('DOMContentLoaded', () => {
   state.historicalData = generateMCXHistoricalData(180);
   updateUI();
   runSanitizer();
+
+  // Responsive Chart Auto-Resize Handlers
+  const chartElementIds = ['chartZScore', 'chartTermStructure', 'chartWaterfall', 'chartNormalizedPrices', 'chartKalman', 'chartRegression'];
+  function resizeAllCharts() {
+    chartElementIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && window.Plotly && el.data) {
+        Plotly.Plots.resize(el);
+      }
+    });
+  }
+
+  let resizeDebounceTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeDebounceTimer);
+    resizeDebounceTimer = setTimeout(resizeAllCharts, 150);
+  });
+
+  document.querySelectorAll('details').forEach(d => {
+    d.addEventListener('toggle', () => {
+      if (d.open) {
+        setTimeout(resizeAllCharts, 80);
+        setTimeout(resizeAllCharts, 300);
+      }
+    });
+  });
 });

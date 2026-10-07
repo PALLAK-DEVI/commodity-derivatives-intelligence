@@ -76,10 +76,16 @@
   --header-overlay: linear-gradient(to bottom, rgba(243, 239, 230, 0.20) 0%, rgba(243, 239, 230, 0.70) 65%, #F3EFE6 100%);
 }
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html {
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -89,7 +95,22 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  position: relative;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+img, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.math-block, .katex-display {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 
 /* ================= TOAST ================= */
@@ -1343,3 +1364,537 @@ details.expandable-details summary:hover {
   gap: 14px;
 }
 .footer-inner strong { color: var(--text-primary); }
+
+/* ==========================================================================
+   RESPONSIVE DESIGN ADAPTATIONS (TABLET & MOBILE)
+   Preserves Desktop 1440px / 1920px 100% Intact
+   Adapts for Tablets (<=1024px) & Mobile Devices (<=768px, <=480px, <=360px)
+   ========================================================================== */
+
+/* ----------------- TABLET ADAPTATION (<= 1024px) ----------------- */
+@media (max-width: 1024px) {
+  .hero-mountain-header {
+    padding: 34px 24px 26px;
+  }
+  .app-container {
+    padding: 28px 20px 60px;
+    gap: 36px;
+  }
+  .story-section {
+    padding: 28px 24px;
+  }
+  .carry-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .norm-visual-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .norm-transform-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 4px 0;
+  }
+  .norm-transform-arrow svg,
+  .norm-transform-arrow i {
+    transform: rotate(90deg);
+  }
+  .tender-card {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .tender-card > div:last-child {
+    text-align: left !important;
+  }
+  .signal-hero-card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 22px 20px;
+  }
+  .grid-2-col {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+/* ----------------- TABLET PORTRAIT & PHONES (<= 768px) ----------------- */
+@media (max-width: 768px) {
+  .hero-mountain-header {
+    padding: 24px 16px 20px;
+  }
+  .hero-top-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .title-group h1 {
+    font-size: 1.60rem;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+  .header-right {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  .team-pill {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 12px;
+  }
+  .team-pill strong {
+    font-size: 0.78rem;
+  }
+  .team-pill span {
+    font-size: 0.72rem;
+    margin-top: 0;
+  }
+  .btn-run {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 9px 14px;
+    font-size: 0.82rem;
+  }
+  #btnLiveTickToggle {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 0 12px;
+    font-size: 0.78rem;
+    height: 38px;
+  }
+  .btn-theme {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+  }
+  .ticker-bar {
+    margin: 16px auto 0;
+    padding: 8px 12px;
+    gap: 14px;
+    width: 100%;
+    font-size: 0.74rem;
+  }
+  .storyline-ribbon {
+    padding: 10px 14px;
+    justify-content: flex-start;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  .step-chip {
+    padding: 5px 10px;
+    font-size: 0.72rem;
+  }
+  .app-container {
+    padding: 22px 14px 50px;
+    gap: 28px;
+  }
+  .story-section {
+    padding: 22px 16px;
+    border-radius: var(--radius-md);
+  }
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-header select,
+  #pairSelect {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .contracts-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 14px;
+  }
+  .contract-card {
+    padding: 16px;
+  }
+  .cost-summary-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px 18px;
+  }
+  .cost-total-pill {
+    width: 100%;
+    text-align: center;
+    font-size: 1.10rem;
+    padding: 8px 14px;
+  }
+  .lot-solver-box {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 14px 16px !important;
+  }
+  .lot-solver-box > div:last-child {
+    text-align: left !important;
+  }
+  .friction-chips-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 10px;
+  }
+  .tuner-card {
+    padding: 16px;
+  }
+  .tuner-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .signal-action-badge {
+    font-size: 1.10rem;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+    padding: 8px 12px;
+    line-height: 1.35;
+  }
+  .trade-history-box {
+    padding: 16px 14px !important;
+    margin-top: 18px !important;
+  }
+  .trade-history-box > div:first-child {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  #btnExportTrades {
+    width: 100%;
+    justify-content: center;
+  }
+  .quant-table {
+    min-width: 540px;
+    width: 100%;
+  }
+  .app-footer {
+    padding: 22px 18px;
+    margin-top: 40px;
+  }
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    text-align: left;
+    font-size: 0.78rem;
+  }
+}
+
+/* ----------------- PHONES (<= 480px) ----------------- */
+@media (max-width: 480px) {
+  .hero-mountain-header {
+    padding: 18px 12px 14px;
+  }
+  .brand-badge {
+    font-size: 0.66rem;
+    padding: 3px 7px;
+  }
+  .title-group h1 {
+    font-size: 1.30rem;
+    margin-top: 5px;
+  }
+  .subtitle {
+    font-size: 0.78rem;
+    line-height: 1.40;
+  }
+  .header-right {
+    gap: 6px;
+  }
+  .team-pill {
+    padding: 6px 10px;
+  }
+  .team-pill strong {
+    font-size: 0.74rem;
+  }
+  .team-pill span {
+    font-size: 0.68rem;
+  }
+  .btn-run {
+    font-size: 0.78rem;
+    padding: 8px 12px;
+  }
+  #btnLiveTickToggle {
+    font-size: 0.74rem;
+    height: 36px;
+    padding: 0 8px;
+  }
+  .btn-theme {
+    width: 36px;
+    height: 36px;
+  }
+  .ticker-bar {
+    margin: 12px auto 0;
+    padding: 6px 8px;
+    font-size: 0.70rem;
+    gap: 8px;
+  }
+  .storyline-ribbon {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .step-chip {
+    padding: 4px 8px;
+    font-size: 0.68rem;
+  }
+  .step-arrow {
+    font-size: 0.68rem;
+  }
+  .app-container {
+    padding: 14px 8px 36px;
+    gap: 20px;
+  }
+  .story-section {
+    padding: 15px 10px;
+    border-radius: var(--radius-sm);
+  }
+  .section-num {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+  }
+  .section-title-wrap {
+    gap: 8px;
+  }
+  .section-title-wrap h2 {
+    font-size: 1.10rem;
+  }
+  .section-subtitle {
+    font-size: 0.76rem;
+  }
+  .contracts-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .contract-card {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+  .contract-header strong {
+    font-size: 0.98rem;
+  }
+  .contract-price {
+    font-size: 1.25rem;
+  }
+  .contract-specs {
+    font-size: 0.74rem;
+    padding-top: 8px;
+  }
+  .norm-box {
+    padding: 14px 10px;
+  }
+  .norm-box h4 {
+    font-size: 0.74rem;
+  }
+  .norm-price {
+    font-size: 1.35rem;
+  }
+  .carry-kpis {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .carry-card {
+    padding: 10px 10px;
+  }
+  .carry-card .label {
+    font-size: 0.64rem;
+  }
+  .carry-card .val {
+    font-size: 1.05rem;
+  }
+  .slider-group {
+    padding: 12px 10px;
+    gap: 10px;
+  }
+  .slider-row {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .slider-row label {
+    width: 100%;
+    min-width: 100%;
+    font-size: 0.74rem;
+  }
+  .slider-row input[type="range"] {
+    flex: 1;
+    min-width: 120px;
+  }
+  .slider-row span {
+    font-size: 0.78rem;
+  }
+  .cost-summary-bar {
+    padding: 12px 14px;
+  }
+  .cost-left h3 {
+    font-size: 0.98rem;
+  }
+  .cost-left p {
+    font-size: 0.76rem;
+  }
+  .cost-total-pill {
+    font-size: 1.0rem;
+    padding: 6px 10px;
+  }
+  .friction-chips-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .friction-chip {
+    padding: 9px 12px;
+    font-size: 0.76rem;
+  }
+  .lot-solver-box {
+    padding: 12px 14px !important;
+  }
+  .tender-card {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .tender-card h4 {
+    font-size: 0.84rem;
+  }
+  .tender-card p {
+    font-size: 0.74rem;
+  }
+  .tuner-card {
+    padding: 12px 10px;
+  }
+  .tuner-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .signal-hero-card {
+    padding: 14px 10px;
+    gap: 14px;
+  }
+  .signal-action-badge {
+    font-size: 0.92rem;
+    padding: 7px 10px;
+  }
+  .signal-explanation {
+    font-size: 0.80rem;
+    line-height: 1.45;
+  }
+  .signal-kpi-quad {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .sig-quad-box {
+    padding: 8px 10px;
+  }
+  .sig-quad-box .label {
+    font-size: 0.62rem;
+  }
+  .sig-quad-box .val {
+    font-size: 1.05rem;
+  }
+  .sig-quad-box .sub {
+    font-size: 0.65rem;
+  }
+  .chart-container {
+    height: 270px;
+    padding: 2px;
+  }
+  #chartZScore {
+    height: 290px !important;
+  }
+  .trade-history-box {
+    padding: 12px 8px !important;
+  }
+  .trade-history-box h3 {
+    font-size: 0.90rem;
+  }
+  .trade-history-box p {
+    font-size: 0.74rem;
+  }
+  #btnExportTrades {
+    font-size: 0.76rem;
+  }
+  .details-content {
+    padding: 12px 10px;
+  }
+  details.expandable-details summary {
+    padding: 10px 12px;
+    font-size: 0.76rem;
+  }
+  .math-block {
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
+  .calc-input-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  #calcContract, #calcRawPrice {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  #calcNormalizedOutput {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  .file-drop-zone {
+    padding: 14px 10px;
+  }
+  .preset-btn-group button {
+    flex: 1 1 45%;
+    font-size: 0.68rem;
+  }
+  .sanitizer-input-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  #rawCsvInput {
+    font-size: 0.68rem;
+    padding: 6px 8px;
+    width: 100% !important;
+  }
+  #btnSanitize {
+    width: 100% !important;
+    justify-content: center;
+    font-size: 0.76rem;
+  }
+  .json-output {
+    font-size: 0.68rem;
+    padding: 8px;
+  }
+  .toast-container {
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+  }
+  .toast {
+    font-size: 0.72rem;
+    padding: 6px 10px;
+  }
+}
+
+/* ----------------- ULTRA-COMPACT PHONES (<= 360px, e.g. 320px) ----------------- */
+@media (max-width: 360px) {
+  .signal-kpi-quad {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .carry-kpis {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .signal-action-badge {
+    font-size: 0.82rem;
+    padding: 6px 8px;
+  }
+  .title-group h1 {
+    font-size: 1.18rem;
+  }
+}
