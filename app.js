@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // ================= 6. CSV TRADE AUDIT EXPORTER =================
+  // ================= 6. CSV TRADE AUDIT EXPORTER & SAMPLE BHAVCOPY =================
   function exportTradeAuditCSV() {
     if (!state.currentBacktest || !state.currentBacktest.tradeLedger.length) {
       showToast('No trade history available to export.');
@@ -543,7 +543,69 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Downloaded Trade Audit Sheet (CSV)');
   }
 
-  // ================= 7. PLOTLY CHARTS (THEME AWARE) =================
+  function downloadSampleBhavcopyCSV() {
+    const symbols = ['GOLDM', 'GOLDTEN', 'GOLDGUINEA', 'GOLDPETAL'];
+    const purities = { GOLDM: 995, GOLDTEN: 999, GOLDGUINEA: 999, GOLDPETAL: 999 };
+    const units = { GOLDM: 10, GOLDTEN: 10, GOLDGUINEA: 8, GOLDPETAL: 1 };
+    const baseP = { GOLDM: 72450, GOLDTEN: 72920, GOLDGUINEA: 58360, GOLDPETAL: 7315 };
+    
+    let csv = 'INSTRUMENT,SYMBOL,EXPIRY_DATE,SETTLE_PRICE,LOT_SIZE,PURITY,VOLUME,OPEN_INTEREST\n';
+    const sampleDates = ['04SEP2026', '05SEP2026', '08SEP2026', '09SEP2026', '10SEP2026', '11SEP2026', '12SEP2026'];
+    
+    sampleDates.forEach(d => {
+      symbols.forEach(sym => {
+        const drift = (Math.random() - 0.49) * 120;
+        const p = (baseP[sym] + drift).toFixed(2);
+        const vol = Math.floor(Math.random() * 450) + 20;
+        const oi = Math.floor(Math.random() * 2400) + 500;
+        csv += `FUTCOM,"${sym}   ","${d}",${p},${units[sym]},${purities[sym]},${vol},${oi}\n`;
+      });
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `MCX_Gold_Bhavcopy_Sample_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    showToast('Downloaded Sample MCX Bhavcopy (.csv)');
+  }
+
+  // ================= 7. DYNAMIC KALMAN FILTER STATE-SPACE ENGINE =================
+  function computeKalmanHedgeRatio(normA, normB) {
+    const n = normA.length;
+    const betaKalman = [];
+    
+    // 1D Online State Space: y_t = beta_t * x_t + e_t
+    let x = 1.004; // Prior state (Physical purity ratio ~ 999/995)
+    let P = 1.0;   // Prior error covariance
+    const Q = 1e-5; // Process covariance (slow physical cointegration drift)
+    const R = 2e-3; // Measurement variance
+    
+    for (let t = 0; t < n; t++) {
+      const y = normA[t];
+      const H = normB[t] / normA[t]; // Local ratio
+      
+      // Prediction step
+      const x_pred = x;
+      const P_pred = P + Q;
+      
+      // Update step (Innovation & Kalman Gain)
+      const y_tilde = 1.0 - H * x_pred;
+      const S = H * P_pred * H + R;
+      const K = (P_pred * H) / S;
+      
+      x = x_pred + K * y_tilde;
+      P = (1 - K * H) * P_pred;
+      
+      betaKalman.push(parseFloat((1.0 + (x - 1.0) * 0.1).toFixed(4)));
+    }
+    return betaKalman;
+  }
+
+  // ================= 8. PLOTLY CHARTS (THEME AWARE) =================
   function renderCharts(pairData, backtestResults) {
     const isLight = document.documentElement.getAttribute('data-theme') === 'light';
 
@@ -686,7 +748,29 @@ document.addEventListener('DOMContentLoaded', () => {
       yaxis: { ...plotLayoutBase.yaxis, title: 'INR / 1g (999 Fineness)' }
     }, { responsive: true, displayModeBar: false });
 
-    // 5. Regression (Expandable)
+    // 5. Dynamic Kalman Filter State Tracking
+    const betaKalman = computeKalmanHedgeRatio(pairData.normA, pairData.normB);
+    const traceKalman = {
+      x: pairData.dates,
+      y: betaKalman,
+      name: 'Kalman State β(t) Online',
+      type: 'scatter',
+      line: { color: '#f59e0b', width: 2 }
+    };
+    const traceStaticBeta = {
+      x: [pairData.dates[0], pairData.dates[pairData.dates.length - 1]],
+      y: [1.004, 1.004],
+      name: 'Static Physical Purity Benchmark (1.0040)',
+      type: 'scatter',
+      mode: 'lines',
+      line: { color: isLight ? '#0f172a' : '#94a3b8', dash: 'dash', width: 1.5 }
+    };
+    Plotly.newPlot('chartKalman', [traceKalman, traceStaticBeta], {
+      ...plotLayoutBase,
+      yaxis: { ...plotLayoutBase.yaxis, title: 'Dynamic Cointegration β(t)' }
+    }, { responsive: true, displayModeBar: false });
+
+    // 6. Regression (Expandable)
     const traceScatter = {
       x: backtestResults.spotReturns.map(v => v * 100),
       y: backtestResults.stratReturns.map(v => v * 100),
@@ -709,7 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { responsive: true, displayModeBar: false });
   }
 
-  // ================= 8. UPDATE UI & HERO SIGNAL =================
+  // ================= 9. UPDATE UI & HERO SIGNAL =================
   function updateUI() {
     const pairData = computePairAnalytics(state.historicalData, state.selectedPair);
     state.currentPairData = pairData;
@@ -775,21 +859,21 @@ document.addEventListener('DOMContentLoaded', () => {
       actionBadge.style.borderColor = 'var(--signal-green)';
       actionBadge.style.background = 'var(--signal-green-bg)';
       actionText.textContent = `BUY ${pairData.legA_key} / SELL ${pairData.legB_key}`;
-      expText.innerHTML = `Statistical divergence at <strong>${latestZ.toFixed(2)} σ</strong> exceeds entry hurdle. Target convergence generates <strong style="color:var(--signal-green);">+₹8.42 / g</strong> net profit post-friction. Hedging ratio: <strong>${lotPlan.formulaSummary}</strong>.`;
+      expText.innerHTML = `Statistical divergence at <strong>${latestZ.toFixed(2)} σ</strong> exceeds entry hurdle (&plusmn;${state.zEntry.toFixed(1)}&sigma;). Target convergence generates <strong style="color:var(--signal-green);">+₹8.42 / g</strong> net profit post-friction. Hedging ratio: <strong>${lotPlan.formulaSummary}</strong>.`;
     } else if (latestZ >= state.zEntry) {
       heroCard.className = 'signal-hero-card caution-state';
       actionBadge.style.color = 'var(--accent-gold)';
       actionBadge.style.borderColor = 'var(--accent-gold)';
       actionBadge.style.background = 'var(--accent-gold-bg)';
       actionText.textContent = `SELL ${pairData.legA_key} / BUY ${pairData.legB_key}`;
-      expText.innerHTML = `Positive dislocation at <strong>${latestZ.toFixed(2)} σ</strong> exceeds hurdle. Mean reversion short spread triggered with <strong>${lotPlan.formulaSummary}</strong>.`;
+      expText.innerHTML = `Positive dislocation at <strong>${latestZ.toFixed(2)} σ</strong> exceeds hurdle (&plusmn;${state.zEntry.toFixed(1)}&sigma;). Mean reversion short spread triggered with <strong>${lotPlan.formulaSummary}</strong>.`;
     } else {
       heroCard.className = 'signal-hero-card';
       actionBadge.style.color = 'var(--text-secondary)';
       actionBadge.style.borderColor = 'var(--border-glass)';
       actionBadge.style.background = 'var(--card-bg)';
       actionText.textContent = `MONITORING SPREAD (NO ACTIVE TRADE)`;
-      expText.innerHTML = `Current Z-score of <strong>${latestZ.toFixed(2)} σ</strong> is within neutral bounds (&plusmn;${state.zEntry}&sigma;). Continuous risk engines active; no trade action recommended.`;
+      expText.innerHTML = `Current Z-score of <strong>${latestZ.toFixed(2)} σ</strong> is within neutral bounds (&plusmn;${state.zEntry.toFixed(1)}&sigma;). Continuous risk engines active; no trade action recommended.`;
     }
 
     // Populate Trade History Ledger Table
@@ -798,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCharts(pairData, backtest);
   }
 
-  // ================= 9. TRADE LEDGER TABLE RENDERER =================
+  // ================= 10. TRADE LEDGER TABLE RENDERER =================
   function renderTradeTable(trades) {
     const tableBody = document.getElementById('tradeTableBody');
     if (!tableBody) return;
@@ -827,7 +911,78 @@ document.addEventListener('DOMContentLoaded', () => {
     tableBody.innerHTML = rowsHtml;
   }
 
-  // ================= 10. FILE UPLOADER & MULTI-CSV PARSER =================
+  // ================= 11. SIMULATED REAL-TIME TICK STREAM ENGINE =================
+  let tickStreamInterval = null;
+  let isStreaming = false;
+
+  function toggleLiveTickStream() {
+    const text = document.getElementById('streamText');
+    const pulse = document.getElementById('streamPulse');
+    const mainPulse = document.getElementById('mainTickerPulse');
+    
+    isStreaming = !isStreaming;
+    
+    if (isStreaming) {
+      if (text) text.textContent = 'Pause Stream';
+      if (pulse) pulse.classList.add('streaming');
+      if (mainPulse) mainPulse.classList.add('streaming');
+      showToast('Live Tick Streaming Active (2.0s Interval)');
+      
+      tickStreamInterval = setInterval(() => {
+        simulateLiveTick();
+      }, 2000);
+    } else {
+      if (text) text.textContent = 'Live Stream';
+      if (pulse) pulse.classList.remove('streaming');
+      if (mainPulse) mainPulse.classList.remove('streaming');
+      clearInterval(tickStreamInterval);
+      showToast('Live Tick Stream Paused');
+    }
+  }
+
+  function simulateLiveTick() {
+    const symbols = ['GOLDM', 'GOLDTEN', 'GOLDGUINEA', 'GOLDPETAL'];
+    const shock = (Math.random() - 0.48) * 0.0008; // Micro price drift
+    
+    symbols.forEach(sym => {
+      const spec = CONTRACT_SPECS[sym];
+      const delta = Math.round(spec.basePrice10g * shock);
+      spec.basePrice10g = Math.max(1000, spec.basePrice10g + delta);
+      
+      // Update DOM price in cards
+      const cardPrice = document.getElementById(`price_${sym}`);
+      if (cardPrice) {
+        cardPrice.innerHTML = `₹${spec.basePrice10g.toLocaleString()} <small style="font-size:0.75rem; color:var(--text-muted);">/ ${spec.quoteUnit}g</small>`;
+      }
+      
+      // Update DOM ticker in hero with flashing animation
+      const tickSpan = document.getElementById(`tickVal${sym}`);
+      const tickerContainer = document.getElementById(`ticker${sym}`);
+      if (tickSpan) {
+        tickSpan.textContent = `₹${spec.basePrice10g.toLocaleString()}`;
+      }
+      if (tickerContainer) {
+        tickerContainer.classList.remove('ticker-flash-up', 'ticker-flash-down');
+        void tickerContainer.offsetWidth; // Trigger reflow
+        tickerContainer.classList.add(delta >= 0 ? 'ticker-flash-up' : 'ticker-flash-down');
+      }
+    });
+
+    // Update the last data row
+    if (state.historicalData.length > 0) {
+      const lastRow = state.historicalData[state.historicalData.length - 1];
+      const updatedNorm = {};
+      symbols.forEach(s => {
+        const spec = CONTRACT_SPECS[s];
+        updatedNorm[s] = (spec.basePrice10g / spec.quoteUnit) * spec.purityFactor;
+      });
+      lastRow.normalized = updatedNorm;
+    }
+
+    updateUI();
+  }
+
+  // ================= 12. FILE UPLOADER & MULTI-CSV PARSER =================
   const fileDropZone = document.getElementById('fileDropZone');
   const csvFileInput = document.getElementById('csvFileInput');
 
@@ -879,12 +1034,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let parsedCount = 0;
-    const parsedData = [];
-    const startDate = new Date(2025, 8, 1);
-
     lines.forEach((line, idx) => {
       const cols = line.split(',').map(c => c.replace(/['"]+/g, '').trim());
-      // Expect format: Symbol, Date/Expiry, Price, Lot/Unit, Purity, Volume
       if (cols.length >= 4 && !isNaN(parseFloat(cols[2]))) {
         parsedCount++;
       }
@@ -903,7 +1054,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, null, 2);
   }
 
-  // ================= 11. EVENT LISTENERS =================
+  // ================= 13. EVENT LISTENERS =================
   // Section 01 Contract Card Clicking
   document.querySelectorAll('#contractsList .contract-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -941,11 +1092,62 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUI();
   });
 
+  // Section 05 Parameter Tuner Sliders
+  document.getElementById('sliderZEntry')?.addEventListener('input', (e) => {
+    state.zEntry = parseFloat(e.target.value);
+    document.getElementById('lblZEntry').innerHTML = `&plusmn;${state.zEntry.toFixed(1)} &sigma;`;
+    updateUI();
+  });
+  document.getElementById('sliderZExit')?.addEventListener('input', (e) => {
+    state.zExit = parseFloat(e.target.value);
+    document.getElementById('lblZExit').innerHTML = `&plusmn;${state.zExit.toFixed(1)} &sigma;`;
+    updateUI();
+  });
+  document.getElementById('sliderZStop')?.addEventListener('input', (e) => {
+    state.zStopLoss = parseFloat(e.target.value);
+    document.getElementById('lblZStop').innerHTML = `&plusmn;${state.zStopLoss.toFixed(1)} &sigma;`;
+    updateUI();
+  });
+  document.getElementById('sliderLookback')?.addEventListener('input', (e) => {
+    state.lookbackDays = parseInt(e.target.value);
+    document.getElementById('lblLookback').textContent = `${state.lookbackDays} Days`;
+    updateUI();
+  });
+  document.getElementById('btnResetTuner')?.addEventListener('click', () => {
+    state.zEntry = 2.0;
+    state.zExit = 0.5;
+    state.zStopLoss = 3.5;
+    state.lookbackDays = 60;
+    
+    document.getElementById('sliderZEntry').value = '2.0';
+    document.getElementById('sliderZExit').value = '0.5';
+    document.getElementById('sliderZStop').value = '3.5';
+    document.getElementById('sliderLookback').value = '60';
+
+    document.getElementById('lblZEntry').innerHTML = `&plusmn;2.0 &sigma;`;
+    document.getElementById('lblZExit').innerHTML = `&plusmn;0.5 &sigma;`;
+    document.getElementById('lblZStop').innerHTML = `&plusmn;3.5 &sigma;`;
+    document.getElementById('lblLookback').textContent = `60 Days`;
+
+    updateUI();
+    showToast('Reset Strategy Parameters to Defaults');
+  });
+
   // Section 05 Pair Select
   document.getElementById('pairSelect')?.addEventListener('change', (e) => {
     state.selectedPair = e.target.value;
     updateUI();
     showToast(`Active Trading Pair: ${e.target.value}`);
+  });
+
+  // Live Tick Stream Button
+  document.getElementById('btnLiveTickToggle')?.addEventListener('click', () => {
+    toggleLiveTickStream();
+  });
+
+  // Download Sample Bhavcopy Button
+  document.getElementById('btnDownloadSampleCsv')?.addEventListener('click', () => {
+    downloadSampleBhavcopyCSV();
   });
 
   // Recompute Pipeline

@@ -263,6 +263,90 @@ body {
   border-radius: 50%;
   box-shadow: 0 0 8px var(--signal-green);
 }
+.ticker-pulse.streaming {
+  animation: pulseStream 1s infinite alternate;
+}
+@keyframes pulseStream {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 12px var(--signal-green); }
+}
+
+@keyframes flashGreen {
+  0% { background: rgba(16, 185, 129, 0.35); }
+  100% { background: transparent; }
+}
+@keyframes flashRed {
+  0% { background: rgba(239, 68, 68, 0.35); }
+  100% { background: transparent; }
+}
+.ticker-flash-up {
+  animation: flashGreen 0.7s ease-out;
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+}
+.ticker-flash-down {
+  animation: flashRed 0.7s ease-out;
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+}
+
+/* Dynamic Parameter Tuner Card */
+.tuner-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  margin-bottom: 22px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.tuner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+.tuner-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tuner-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.80rem;
+}
+.tuner-item-header label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.tuner-item-header span {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--accent-gold);
+}
+.tuner-item input[type="range"] {
+  accent-color: var(--accent-gold);
+  cursor: pointer;
+}
+
+/* Tender Margin Card */
+.tender-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--signal-red);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+  align-items: center;
+}
+@media (max-width: 860px) {
+  .tender-card { grid-template-columns: 1fr; }
+}
 
 /* Visual Storyline Stepper Ribbon */
 .storyline-ribbon {
