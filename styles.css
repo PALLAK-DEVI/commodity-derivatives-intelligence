@@ -43,35 +43,37 @@
   --radius-lg: 16px;
 }
 
-/* ================= LIGHT THEME OVERRIDES (VIBRANT & BRIGHT PHOTO BACKDROPS) ================= */
+/* ================= LIGHT THEME (INSTITUTIONAL COMMODITY RESEARCH PALETTE) ================= */
 [data-theme="light"] {
-  --bg-app: #f2ece1;
-  --text-primary: #090d16;
-  --text-secondary: #1e293b;
-  --text-muted: #475569;
-  --border-glass: rgba(0, 0, 0, 0.14);
+  --bg-app: #F3EFE6;
+  --text-primary: #17191A;
+  --text-secondary: #62676A;
+  --text-muted: #7A8084;
+  --border-glass: #D8D2C6;
 
-  /* Transparent subtle warm tint - NO milky white wash so real photography is 100% bright, colorful & prominent */
-  --section-overlay: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(245, 235, 215, 0.08) 50%, rgba(255, 255, 255, 0.22) 100%);
-  --card-bg: rgba(255, 255, 255, 0.93);
-  --card-border: rgba(0, 0, 0, 0.15);
+  /* Sophisticated warm translucent overlay: keeps photography atmospheric without competing with text */
+  --section-overlay: linear-gradient(135deg, rgba(243, 239, 230, 0.82) 0%, rgba(240, 235, 224, 0.65) 50%, rgba(243, 239, 230, 0.85) 100%);
+  --card-bg: #FAF9F5;
+  --card-border: #D8D2C6;
 
-  --accent-gold: #b45309;
-  --accent-gold-light: #d97706;
-  --accent-gold-bg: rgba(180, 83, 9, 0.14);
-  --accent-gold-border: rgba(180, 83, 9, 0.38);
+  /* Refined Institutional Gold/Amber Accent */
+  --accent-gold: #B86A16;
+  --accent-gold-light: #D97706;
+  --accent-gold-bg: rgba(184, 106, 22, 0.08);
+  --accent-gold-border: rgba(184, 106, 22, 0.28);
 
-  --signal-green: #059669;
-  --signal-red: #dc2626;
-  --signal-green-bg: rgba(5, 150, 105, 0.14);
-  --signal-red-bg: rgba(220, 38, 38, 0.14);
+  /* Functional Signal Colors (Strictly for BUY/SELL/Profit/Loss) */
+  --signal-green: #0D8A5B;
+  --signal-red: #C53030;
+  --signal-green-bg: rgba(13, 138, 91, 0.10);
+  --signal-red-bg: rgba(197, 48, 48, 0.10);
 
-  --plot-bg: rgba(255, 255, 255, 0.96);
-  --plot-grid: #e2e8f0;
-  --plot-text: #1e293b;
-  --input-bg: #ffffff;
-  --chip-bg: rgba(255, 255, 255, 0.94);
-  --header-overlay: linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 0%, rgba(242, 236, 225, 0.35) 70%, #f2ece1 100%);
+  --plot-bg: #FAF9F5;
+  --plot-grid: #E8E3D8;
+  --plot-text: #62676A;
+  --input-bg: #FAF9F5;
+  --chip-bg: #FAF9F5;
+  --header-overlay: linear-gradient(to bottom, rgba(243, 239, 230, 0.20) 0%, rgba(243, 239, 230, 0.70) 65%, #F3EFE6 100%);
 }
 
 * {
@@ -486,35 +488,45 @@ body {
   margin-top: 3px;
 }
 
-/* ================= EXPLICIT LIGHT MODE HIGH CONTRAST & BRIGHT BACKGROUND RULES ================= */
+/* ================= EXPLICIT LIGHT MODE RULES (PREMIUM INSTITUTIONAL STYLING) ================= */
 [data-theme="light"] .title-group h1 {
-  color: #090d16 !important;
-  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.95), 0 0 16px rgba(255, 255, 255, 0.85) !important;
+  color: #17191A !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
 }
 
 [data-theme="light"] .subtitle {
-  color: #0f172a !important;
-  font-weight: 600 !important;
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95) !important;
+  color: #62676A !important;
+  font-weight: 500 !important;
+  text-shadow: none !important;
 }
 
 [data-theme="light"] .section-title-wrap h2 {
-  color: #090d16 !important;
-  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.95), 0 0 14px rgba(255, 255, 255, 0.85) !important;
+  color: #17191A !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
 }
 
 [data-theme="light"] .section-subtitle {
-  color: #0f172a !important;
-  font-weight: 600 !important;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.95) !important;
+  color: #62676A !important;
+  font-weight: 400 !important;
+  text-shadow: none !important;
+}
+
+[data-theme="light"] .section-num {
+  background: rgba(184, 106, 22, 0.08) !important;
+  color: #B86A16 !important;
+  border: 1px solid rgba(184, 106, 22, 0.28) !important;
+  font-weight: 800 !important;
 }
 
 [data-theme="light"] .story-section {
-  border: 1px solid rgba(180, 83, 9, 0.35) !important;
-  border-top: 3px solid #b45309 !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16) !important;
+  border: 1px solid #D8D2C6 !important;
+  border-top: 3px solid #B86A16 !important;
+  box-shadow: 0 4px 20px rgba(23, 25, 26, 0.04) !important;
 }
 
+/* Cards: Soft off-white, subtle warm-gray borders, light shadows */
 [data-theme="light"] .contract-card,
 [data-theme="light"] .norm-box,
 [data-theme="light"] .carry-card,
@@ -528,171 +540,317 @@ body {
 [data-theme="light"] .slider-group,
 [data-theme="light"] .tuner-card,
 [data-theme="light"] .tender-card {
-  background: rgba(255, 255, 255, 0.94) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border-color: rgba(0, 0, 0, 0.16) !important;
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.10) !important;
+  background: #FAF9F5 !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-color: #D8D2C6 !important;
+  box-shadow: 0 2px 10px rgba(23, 25, 26, 0.04), 0 1px 2px rgba(23, 25, 26, 0.02) !important;
+}
+
+[data-theme="light"] .contract-card:hover,
+[data-theme="light"] .contract-card.selected {
+  border-color: #B86A16 !important;
+  box-shadow: 0 4px 16px rgba(184, 106, 22, 0.12) !important;
+}
+
+[data-theme="light"] .contract-header strong {
+  color: #17191A !important;
+}
+
+[data-theme="light"] .contract-price {
+  color: #17191A !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .contract-specs {
+  color: #62676A !important;
+  border-top: 1px solid #E8E3D8 !important;
+}
+[data-theme="light"] .contract-specs span strong {
+  color: #17191A !important;
+}
+
+/* Normalization Section Styling in Light Mode */
+[data-theme="light"] .norm-box h4 {
+  color: #62676A !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light"] .norm-price {
+  color: #17191A !important;
+}
+
+[data-theme="light"] .norm-box.target-box {
+  border-color: rgba(184, 106, 22, 0.35) !important;
+  background: #FAF9F5 !important;
+}
+
+[data-theme="light"] .norm-box.target-box .norm-price {
+  color: #B86A16 !important;
+}
+
+[data-theme="light"] .norm-transform-arrow {
+  color: #B86A16 !important;
+}
+
+/* Stepper Ribbon & Chips */
+[data-theme="light"] .storyline-ribbon {
+  background: #F3EFE6 !important;
+  border-bottom: 1px solid #D8D2C6 !important;
 }
 
 [data-theme="light"] .step-chip {
-  background: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  border-color: rgba(0, 0, 0, 0.14) !important;
-  color: #090d16 !important;
-  font-weight: 700 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  background: #FAF9F5 !important;
+  border: 1px solid #D8D2C6 !important;
+  color: #62676A !important;
+  font-weight: 600 !important;
+  box-shadow: 0 1px 3px rgba(23, 25, 26, 0.03) !important;
+}
+[data-theme="light"] .step-chip .num {
+  color: #B86A16 !important;
+  font-weight: 800 !important;
 }
 [data-theme="light"] .step-chip:hover {
-  color: #090d16 !important;
-  border-color: #b45309 !important;
+  color: #17191A !important;
+  border-color: #B86A16 !important;
+  background: #FFFFFF !important;
 }
 
 [data-theme="light"] .purity-badge {
-  background: rgba(241, 245, 249, 0.90) !important;
-  border-color: #cbd5e1 !important;
-  color: #1e293b !important;
-  font-weight: 700 !important;
+  background: #EFECE4 !important;
+  border-color: #D8D2C6 !important;
+  color: #62676A !important;
+  font-weight: 600 !important;
 }
 [data-theme="light"] .purity-badge.gold995 {
-  background: rgba(180, 83, 9, 0.14) !important;
-  border-color: rgba(180, 83, 9, 0.35) !important;
-  color: #b45309 !important;
+  background: rgba(184, 106, 22, 0.08) !important;
+  border-color: rgba(184, 106, 22, 0.28) !important;
+  color: #B86A16 !important;
+  font-weight: 700 !important;
 }
 
+/* Tables & Audit Ledger */
 [data-theme="light"] .quant-table th {
-  background: rgba(248, 250, 252, 0.92) !important;
-  color: #334155 !important;
-  border-bottom: 2px solid #cbd5e1 !important;
+  background: #F3EFE6 !important;
+  color: #62676A !important;
+  border-bottom: 2px solid #D8D2C6 !important;
   font-weight: 700 !important;
 }
 
 [data-theme="light"] .quant-table td {
-  color: #090d16 !important;
-  border-bottom: 1px solid #e2e8f0 !important;
+  color: #17191A !important;
+  border-bottom: 1px solid #E8E3D8 !important;
 }
 
 [data-theme="light"] .quant-table tr:hover td {
-  background: rgba(241, 245, 249, 0.85) !important;
+  background: #F3EFE6 !important;
 }
 
+/* Math, Form & Json blocks */
 [data-theme="light"] .math-block {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border: 1px solid #cbd5e1 !important;
-  color: #090d16 !important;
+  background: #FAF9F5 !important;
+  border: 1px solid #D8D2C6 !important;
+  color: #17191A !important;
 }
 
 [data-theme="light"] .form-control {
-  background: rgba(255, 255, 255, 0.96) !important;
-  border: 1px solid #cbd5e1 !important;
-  color: #090d16 !important;
+  background: #FAF9F5 !important;
+  border: 1px solid #D8D2C6 !important;
+  color: #17191A !important;
+}
+[data-theme="light"] .form-control:focus {
+  border-color: #B86A16 !important;
 }
 
 [data-theme="light"] .json-output {
-  background: rgba(255, 255, 255, 0.92) !important;
-  border: 1px solid #cbd5e1 !important;
-  color: #090d16 !important;
+  background: #FAF9F5 !important;
+  border: 1px solid #D8D2C6 !important;
+  color: #17191A !important;
 }
 
+/* Top Live Ticker Bar */
 [data-theme="light"] .ticker-bar {
-  background: rgba(255, 255, 255, 0.90) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  border-color: rgba(0, 0, 0, 0.14) !important;
-  color: #090d16 !important;
+  background: #FAF9F5 !important;
+  border: 1px solid #D8D2C6 !important;
+  color: #17191A !important;
+  box-shadow: 0 1px 4px rgba(23, 25, 26, 0.04) !important;
 }
 [data-theme="light"] .ticker-bar span {
-  color: #1e293b !important;
+  color: #62676A !important;
 }
 [data-theme="light"] .ticker-bar span strong {
-  color: #090d16 !important;
+  color: #17191A !important;
+}
+[data-theme="light"] .ticker-label {
+  color: #B86A16 !important;
 }
 
 [data-theme="light"] .team-pill {
-  background: rgba(255, 255, 255, 0.90) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  border-color: rgba(0, 0, 0, 0.14) !important;
+  background: #FAF9F5 !important;
+  border: 1px solid #D8D2C6 !important;
+  box-shadow: 0 1px 4px rgba(23, 25, 26, 0.04) !important;
+}
+[data-theme="light"] .team-pill strong {
+  color: #B86A16 !important;
 }
 [data-theme="light"] .team-pill span {
-  color: #475569 !important;
+  color: #62676A !important;
 }
 
 [data-theme="light"] .btn-theme {
-  background: rgba(255, 255, 255, 0.90) !important;
-  border-color: rgba(0, 0, 0, 0.16) !important;
-  color: #090d16 !important;
+  background: #FAF9F5 !important;
+  border: 1px solid #D8D2C6 !important;
+  color: #17191A !important;
+}
+[data-theme="light"] .btn-theme:hover {
+  border-color: #B86A16 !important;
 }
 
+[data-theme="light"] .btn-run {
+  background: linear-gradient(135deg, #B86A16, #924E0C) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(184, 106, 22, 0.25) !important;
+}
+
+[data-theme="light"] .btn-primary {
+  background: #B86A16 !important;
+  border-color: #B86A16 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="light"] .btn-secondary {
+  background: #FAF9F5 !important;
+  border-color: #D8D2C6 !important;
+  color: #17191A !important;
+}
+[data-theme="light"] .btn-secondary:hover {
+  background: #F3EFE6 !important;
+}
+
+/* Details & Accordions */
 [data-theme="light"] details.expandable-details summary {
-  color: #1e293b !important;
+  color: #17191A !important;
+  font-weight: 600 !important;
 }
 [data-theme="light"] details.expandable-details summary:hover {
-  background: #f8fafc !important;
+  background: #F3EFE6 !important;
 }
 [data-theme="light"] .details-content {
-  border-top-color: #e2e8f0 !important;
-  color: #1e293b !important;
+  border-top: 1px solid #E8E3D8 !important;
+  color: #62676A !important;
 }
 
+/* KPI boxes, Carry & Signals */
 [data-theme="light"] .sig-quad-box .label,
 [data-theme="light"] .carry-card .label {
-  color: #475569 !important;
+  color: #7A8084 !important;
   font-weight: 700 !important;
+}
+
+[data-theme="light"] .sig-quad-box .val,
+[data-theme="light"] .carry-card .val {
+  color: #17191A !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .sig-quad-box .val.green {
+  color: #0D8A5B !important;
 }
 
 [data-theme="light"] .sig-quad-box .sub,
-[data-theme="light"] .contract-specs {
-  color: #475569 !important;
-}
-
-[data-theme="light"] .contract-specs span strong {
-  color: #090d16 !important;
-}
-
-[data-theme="light"] .norm-box h4 {
-  color: #334155 !important;
-  font-weight: 700 !important;
+[data-theme="light"] .carry-card p {
+  color: #7A8084 !important;
 }
 
 [data-theme="light"] .friction-chip span {
-  color: #334155 !important;
-  font-weight: 600 !important;
+  color: #62676A !important;
+  font-weight: 500 !important;
 }
 
 [data-theme="light"] .friction-chip strong {
-  color: #090d16 !important;
+  color: #17191A !important;
   font-weight: 700 !important;
 }
 
 [data-theme="light"] .slider-row label {
-  color: #1e293b !important;
+  color: #17191A !important;
   font-weight: 600 !important;
 }
 
+[data-theme="light"] .slider-row span {
+  color: #B86A16 !important;
+  font-weight: 800 !important;
+}
+
+[data-theme="light"] .tuner-item-header label {
+  color: #17191A !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="light"] .tuner-item-header span {
+  color: #B86A16 !important;
+  font-weight: 800 !important;
+}
+
 [data-theme="light"] .cost-left h3 {
-  color: #090d16 !important;
+  color: #17191A !important;
+  font-weight: 800 !important;
 }
 
 [data-theme="light"] .cost-left p {
-  color: #334155 !important;
+  color: #62676A !important;
+}
+
+[data-theme="light"] .cost-total-pill {
+  background: rgba(184, 106, 22, 0.08) !important;
+  border-color: rgba(184, 106, 22, 0.28) !important;
+  color: #B86A16 !important;
 }
 
 [data-theme="light"] .signal-explanation {
-  color: #1e293b !important;
+  color: #62676A !important;
 }
 [data-theme="light"] .signal-explanation strong {
-  color: #090d16 !important;
+  color: #17191A !important;
+}
+
+[data-theme="light"] .signal-hero-card.active-buy {
+  border-color: #0D8A5B !important;
+}
+[data-theme="light"] .signal-hero-card.caution-state {
+  border-color: #B86A16 !important;
+}
+
+[data-theme="light"] .signal-action-badge {
+  background: rgba(13, 138, 91, 0.10) !important;
+  border-color: #0D8A5B !important;
+  color: #0D8A5B !important;
+}
+
+[data-theme="light"] .signal-hero-card.caution-state .signal-action-badge {
+  background: rgba(184, 106, 22, 0.08) !important;
+  border-color: #B86A16 !important;
+  color: #B86A16 !important;
+}
+
+[data-theme="light"] .tender-card {
+  border-left: 4px solid #C53030 !important;
+  border-color: #D8D2C6 !important;
+}
+[data-theme="light"] .tender-card h4 {
+  color: #C53030 !important;
+}
+[data-theme="light"] .tender-card p {
+  color: #62676A !important;
 }
 
 [data-theme="light"] .app-footer {
-  background: #ede7d8 !important;
-  border-top: 1px solid rgba(180, 83, 9, 0.22) !important;
-  color: #475569 !important;
+  background: #F3EFE6 !important;
+  border-top: 1px solid #D8D2C6 !important;
+  color: #62676A !important;
 }
 [data-theme="light"] .footer-inner strong {
-  color: #090d16 !important;
+  color: #17191A !important;
 }
 
 /* ================= CARDS & BOXES ================= */
