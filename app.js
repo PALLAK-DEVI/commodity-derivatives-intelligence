@@ -1056,24 +1056,51 @@ function bootInstitutionalEngine() {
       yaxis: { ...plotLayoutBase.yaxis, title: 'PnL Attribution (INR)' }
     }, { responsive: true, displayModeBar: false });
 
-    // 4. Normalized Prices (Expandable)
-    const traceA = {
-      x: pairData.dates,
-      y: pairData.normA,
-      name: `${pairData.legA_key} (999 Clean)`,
+    // 4. Normalized Historical Prices (All 4 MCX Gold Contracts)
+    const normDates = state.historicalData.map(d => d.date);
+    const traceGoldM = {
+      x: normDates,
+      y: state.historicalData.map(d => d.normalized.GOLDM),
+      name: 'GOLDM (100g, 995 Fine → 999 Std)',
       type: 'scatter',
-      line: { color: '#f59e0b', width: 1.8 }
+      mode: 'lines',
+      line: { color: '#f59e0b', width: 2.2 }
     };
-    const traceB = {
-      x: pairData.dates,
-      y: pairData.normB,
-      name: `${pairData.legB_key} (999 Clean)`,
+    const traceGoldTen = {
+      x: normDates,
+      y: state.historicalData.map(d => d.normalized.GOLDTEN),
+      name: 'GOLDTEN (10g, 999 Fine)',
       type: 'scatter',
-      line: { color: '#94a3b8', width: 1.8 }
+      mode: 'lines',
+      line: { color: isLight ? '#0284c7' : '#38bdf8', width: 1.8 }
     };
-    safePlot('chartNormalizedPrices', [traceA, traceB], {
+    const traceGuinea = {
+      x: normDates,
+      y: state.historicalData.map(d => d.normalized.GOLDGUINEA),
+      name: 'GOLDGUINEA (8g, 999 Fine)',
+      type: 'scatter',
+      mode: 'lines',
+      line: { color: isLight ? '#059669' : '#10b981', width: 1.8 }
+    };
+    const tracePetal = {
+      x: normDates,
+      y: state.historicalData.map(d => d.normalized.GOLDPETAL),
+      name: 'GOLDPETAL (1g, 999 Fine)',
+      type: 'scatter',
+      mode: 'lines',
+      line: { color: '#a855f7', width: 1.8 }
+    };
+
+    safePlot('chartNormalizedPrices', [traceGoldM, traceGoldTen, traceGuinea, tracePetal], {
       ...plotLayoutBase,
-      yaxis: { ...plotLayoutBase.yaxis, title: 'INR / 1g (999 Fineness)' }
+      xaxis: { ...plotLayoutBase.xaxis, title: 'Date (180-Day History)' },
+      yaxis: { ...plotLayoutBase.yaxis, title: 'Normalized Price (₹ / 1g 999 Gold)' },
+      legend: {
+        orientation: 'h',
+        x: 0,
+        y: 1.14,
+        font: { family: 'JetBrains Mono', size: 10, color: isLight ? '#17191A' : '#94a3b8' }
+      }
     }, { responsive: true, displayModeBar: false });
 
     // 5. Dynamic Kalman Filter State Tracking
@@ -1730,12 +1757,18 @@ function bootInstitutionalEngine() {
       }
     }
 
-    // 6. Refresh icons & safely resize Plotly charts
+    // 6. Refresh icons & re-render charts for newly visible containers
     try {
       if (window.lucide) lucide.createIcons();
     } catch (e) {}
 
-    setTimeout(resizeAllCharts, 50);
+    if (state.currentPairData && state.currentBacktest) {
+      try {
+        renderCharts(state.currentPairData, state.currentBacktest);
+      } catch (e) {}
+    }
+
+    setTimeout(resizeAllCharts, 40);
     setTimeout(resizeAllCharts, 200);
   }
 

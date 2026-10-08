@@ -94,10 +94,12 @@
 
       if (window.lucide) try { lucide.createIcons(); } catch(e) {}
       if (window.Plotly) {
-        ['chartZScore', 'chartTermStructure', 'chartWaterfall', 'chartNormalizedPrices', 'chartKalman', 'chartRegression'].forEach(function(id) {
-          var cel = document.getElementById(id);
-          if (cel && cel.data && cel.offsetParent !== null) try { Plotly.Plots.resize(cel); } catch(e) {}
-        });
+        setTimeout(function() {
+          ['chartZScore', 'chartTermStructure', 'chartWaterfall', 'chartNormalizedPrices', 'chartKalman', 'chartRegression'].forEach(function(id) {
+            var cel = document.getElementById(id);
+            if (cel && cel.data && cel.offsetParent !== null) try { Plotly.Plots.resize(cel); } catch(e) {}
+          });
+        }, 60);
       }
     };
     window.switchView = window.switchTerminalView;
