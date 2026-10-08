@@ -30,17 +30,17 @@
   let foregroundBokeh = [];// Cinematic out-of-focus foreground orbs
   let ambientBlooms = [];  // Soft warm ambient background light centers
 
-  // Configuration Constants
+  // Configuration Constants (Deep Background Space Only)
   const CONFIG = {
     fov: 380,
-    numOrbs: 20,
-    numDust: 190,
-    numDataNodes: 35,
-    numBokeh: 7,
+    numOrbs: 18,
+    numDust: 160,
+    numDataNodes: 30,
+    numBokeh: 0,
     numBlooms: 3,
     connectDistance: 110,
     maxDepth: 900,
-    minDepth: 20
+    minDepth: 120
   };
 
   // Initialize Canvas & Engine
@@ -50,6 +50,7 @@
       canvas = document.createElement('canvas');
       canvas.id = 'goldMarketCanvas';
       canvas.className = 'gold-market-canvas';
+      canvas.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:-1; pointer-events:none;';
       document.body.prepend(canvas);
     }
     ctx = canvas.getContext('2d', { alpha: true });
@@ -230,7 +231,7 @@
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, width, height);
 
-    // Draw Ambient Volumetric Golden Blooms
+    // Draw Ambient Volumetric Golden Blooms (Deep Space)
     renderAmbientBlooms(time);
 
     // Project and Render Distant Data Nodes
@@ -239,14 +240,11 @@
     // Update and Render 3D Constellation Mesh Connections
     renderConstellationMesh();
 
-    // Update and Render Drifting Gold Dust Particles
+    // Update and Render Drifting Background Gold Dust Particles
     renderGoldDust(time);
 
-    // Update and Render 3D Metallic Gold Spheres with Specular Phong Highlights
+    // Update and Render 3D Metallic Gold Spheres (Background Layer)
     renderGoldOrbs(time);
-
-    // Render Cinematic Foreground Out-of-Focus Bokeh
-    renderForegroundBokeh(time);
 
     animationFrameId = requestAnimationFrame(render);
   }
