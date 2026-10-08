@@ -96,6 +96,19 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* ================= 3D FLOATING GOLD MARKET CANVAS (BACKGROUND LAYER) ================= */
+.gold-market-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  opacity: 0.95;
+  display: block;
+}
+
 body {
   background-color: var(--bg-app);
   color: var(--text-primary);
