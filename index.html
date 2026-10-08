@@ -116,7 +116,11 @@
     };
     window.switchView = window.switchTerminalView;
 
+    var lastSidebarToggle = 0;
     window.toggleMobileSidebar = function(forceOpen) {
+      var now = Date.now();
+      if (forceOpen === undefined && (now - lastSidebarToggle < 200)) return;
+      lastSidebarToggle = now;
       var sb = document.querySelector('.terminal-sidebar');
       var ov = document.getElementById('sidebarOverlay');
       if (!sb) return;
@@ -134,12 +138,12 @@
 <body>
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
-  <div id="sidebarOverlay" class="sidebar-overlay" onclick="window.toggleMobileSidebar(false)"></div>
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
   <!-- Terminal Top Header Bar -->
   <header class="terminal-topbar">
     <div class="topbar-left">
-      <button id="btnMobileMenu" class="btn-topbar-icon mobile-only" title="Open Navigation Menu" onclick="window.toggleMobileSidebar()">
+      <button id="btnMobileMenu" class="btn-topbar-icon mobile-only" title="Open Navigation Menu">
         <i data-lucide="menu"></i>
       </button>
       <button id="btnToggleSidebar" class="btn-topbar-icon desktop-only" title="Toggle Sidebar">
@@ -270,7 +274,7 @@
             <i data-lucide="terminal" style="width:16px; height:16px; color:var(--accent-gold);"></i>
             <span>Menu &bull; Track 03</span>
           </div>
-          <button type="button" id="btnCloseMobileSidebar" class="btn-sidebar-mobile-close" title="Close Menu" onclick="window.toggleMobileSidebar(false)">&times;</button>
+          <button type="button" id="btnCloseMobileSidebar" class="btn-sidebar-mobile-close" title="Close Menu">&times;</button>
         </div>
         <div class="sidebar-section-label">MAIN WORKSPACE</div>
         <nav class="sidebar-nav">
