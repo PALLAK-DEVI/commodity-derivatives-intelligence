@@ -497,6 +497,12 @@ img, svg {
 }
 
 .nav-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -509,6 +515,9 @@ img, svg {
   transition: all 0.15s ease;
   border-left: 2px solid transparent;
   user-select: none;
+}
+.nav-item * {
+  pointer-events: none;
 }
 .nav-item svg {
   width: 16px;

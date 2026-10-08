@@ -1621,43 +1621,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ================= 14. VIEW ROUTER (CHATGPT / DASHBOARD STYLE) =================
   function switchView(viewId) {
+    if (!viewId) return;
+
+    // Normalize view ID
+    const targetId = viewId.startsWith('view-') ? viewId : ('view-' + viewId);
+
     // 1. Update Active Navigation State in Sidebar
     document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
-      if (item.dataset.view === viewId) {
-        item.classList.add('active');
-      } else {
-        item.classList.remove('active');
-      }
+      const v = item.dataset.view || item.getAttribute('data-view');
+      item.classList.toggle('active', v === targetId || v === viewId);
     });
 
     // 2. Hide all views and reveal target view
+    let found = false;
     document.querySelectorAll('.dashboard-view').forEach(view => {
-      if (view.id === viewId) {
+      if (view.id === targetId || view.id === viewId) {
         view.classList.add('active-view');
+        found = true;
       } else {
         view.classList.remove('active-view');
       }
     });
 
+    if (!found) {
+      console.warn(`View "${viewId}" not found, defaulting to view-dashboard`);
+      document.getElementById('view-dashboard')?.classList.add('active-view');
+    }
+
     // 3. Close mobile drawer if open
     document.querySelector('.terminal-sidebar')?.classList.remove('mobile-open');
     document.getElementById('sidebarOverlay')?.classList.remove('active');
 
-    // 4. Trigger Plotly resize for newly exposed containers
+    // 4. Scroll workspace container to top
+    const workspace = document.querySelector('.terminal-workspace');
+    if (workspace) workspace.scrollTop = 0;
+    window.scrollTo(0, 0);
+
+    // 5. Re-render charts & refresh Lucide icons for exposed containers
+    if (window.lucide) lucide.createIcons();
+    if (state.currentPairData && state.currentBacktest) {
+      renderCharts(state.currentPairData, state.currentBacktest);
+    }
     setTimeout(resizeAllCharts, 60);
     setTimeout(resizeAllCharts, 220);
   }
 
-  // Sidebar navigation click handlers
+  // Sidebar navigation click handlers (Event delegation + direct binding)
+  document.querySelector('.sidebar-nav')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.nav-item');
+    if (btn) {
+      e.preventDefault();
+      const targetView = btn.dataset.view || btn.getAttribute('data-view');
+      if (targetView) {
+        switchView(targetView);
+        try {
+          if (window.location.protocol !== 'file:' && history.pushState) {
+            history.pushState(null, null, '#' + targetView.replace('view-', ''));
+          }
+        } catch (err) {
+          // Ignore pushState errors in local/sandboxed origins
+        }
+      }
+    }
+  });
+
   document.querySelectorAll('.sidebar-nav .nav-item').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const targetView = btn.dataset.view;
+      const targetView = btn.dataset.view || btn.getAttribute('data-view');
       if (targetView) {
         switchView(targetView);
-        if (history.pushState) {
-          history.pushState(null, null, '#' + targetView.replace('view-', ''));
-        }
+        try {
+          if (window.location.protocol !== 'file:' && history.pushState) {
+            history.pushState(null, null, '#' + targetView.replace('view-', ''));
+          }
+        } catch (err) {}
       }
     });
   });
