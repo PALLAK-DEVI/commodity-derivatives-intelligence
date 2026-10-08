@@ -183,6 +183,8 @@ function bootInstitutionalEngine() {
     currentLotSolve: null
   };
 
+  let allocatedCapital = 200000;
+
   // Set Initial Theme
   document.documentElement.setAttribute('data-theme', state.theme);
   updateThemeIcon();
@@ -2215,8 +2217,6 @@ function bootInstitutionalEngine() {
   });
 
   // ================= 16. CAPITAL & MARGIN POSITION SIZER ENGINE =================
-  let allocatedCapital = 200000;
-
   function updateCapitalSizer() {
     const lotPlan = state.currentLotSolve;
     if (!lotPlan) return;
