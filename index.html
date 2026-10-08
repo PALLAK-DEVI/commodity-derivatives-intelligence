@@ -93,13 +93,26 @@
       }
 
       if (window.lucide) try { lucide.createIcons(); } catch(e) {}
+      if (window.__renderAllCharts) {
+        try { window.__renderAllCharts(); } catch(e) {}
+      }
       if (window.Plotly) {
-        setTimeout(function() {
-          ['chartZScore', 'chartTermStructure', 'chartWaterfall', 'chartNormalizedPrices', 'chartKalman', 'chartRegression'].forEach(function(id) {
+        var ids = ['chartZScore', 'chartTermStructure', 'chartWaterfall', 'chartNormalizedPrices', 'chartKalman', 'chartRegression'];
+        var doResize = function() {
+          ids.forEach(function(id) {
             var cel = document.getElementById(id);
-            if (cel && cel.data && cel.offsetParent !== null) try { Plotly.Plots.resize(cel); } catch(e) {}
+            if (cel && window.Plotly) {
+              if (cel._cachedPlot && cel.offsetParent !== null) {
+                try { Plotly.react(cel, cel._cachedPlot.data, cel._cachedPlot.layout, cel._cachedPlot.config); } catch(e) {}
+              }
+              if (cel.data && cel.offsetParent !== null) {
+                try { Plotly.Plots.resize(cel); } catch(e) {}
+              }
+            }
           });
-        }, 60);
+        };
+        setTimeout(doResize, 50);
+        setTimeout(doResize, 180);
       }
     };
     window.switchView = window.switchTerminalView;

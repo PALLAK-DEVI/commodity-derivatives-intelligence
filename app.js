@@ -1118,7 +1118,10 @@ function bootInstitutionalEngine() {
       try {
         const el = document.getElementById(elementId);
         if (el && window.Plotly) {
-          Plotly.newPlot(el, data, layout, config);
+          const effectiveLayout = { autosize: true, ...layout };
+          const effectiveConfig = { responsive: true, displayModeBar: false, ...config };
+          el._cachedPlot = { data, layout: effectiveLayout, config: effectiveConfig };
+          Plotly.react(el, data, effectiveLayout, effectiveConfig);
         }
       } catch (err) {
         console.warn(`Chart render skipped/error for #${elementId}:`, err);
@@ -1877,23 +1880,59 @@ function bootInstitutionalEngine() {
   function resizeAllCharts() {
     chartElementIds.forEach(id => {
       const el = document.getElementById(id);
-      if (el && window.Plotly && el.data) {
-        Plotly.Plots.resize(el);
+      if (el && window.Plotly) {
+        if (el.offsetParent !== null || el.clientWidth > 0) {
+          if (el._cachedPlot) {
+            try {
+              Plotly.react(el, el._cachedPlot.data, el._cachedPlot.layout, el._cachedPlot.config);
+            } catch (e) {}
+          }
+          try {
+            Plotly.Plots.resize(el);
+          } catch (e) {}
+        }
       }
+    });
+  }
+
+  // Automatic observer for when hidden views or chart containers become visible in DOM
+  if (typeof IntersectionObserver !== 'undefined') {
+    const chartObserver = new IntersectionObserver((entries) => {
+      let active = false;
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.target) {
+          active = true;
+          const target = entry.target;
+          if (target._cachedPlot && window.Plotly) {
+            try {
+              Plotly.react(target, target._cachedPlot.data, target._cachedPlot.layout, target._cachedPlot.config);
+              Plotly.Plots.resize(target);
+            } catch (e) {}
+          }
+        }
+      });
+      if (active) {
+        setTimeout(resizeAllCharts, 40);
+      }
+    }, { threshold: 0.01 });
+
+    chartElementIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) chartObserver.observe(el);
     });
   }
 
   let resizeDebounceTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeDebounceTimer);
-    resizeDebounceTimer = setTimeout(resizeAllCharts, 150);
+    resizeDebounceTimer = setTimeout(resizeAllCharts, 120);
   });
 
   document.querySelectorAll('details').forEach(d => {
     d.addEventListener('toggle', () => {
       if (d.open) {
-        setTimeout(resizeAllCharts, 80);
-        setTimeout(resizeAllCharts, 300);
+        setTimeout(resizeAllCharts, 60);
+        setTimeout(resizeAllCharts, 250);
       }
     });
   });
@@ -1998,19 +2037,34 @@ function bootInstitutionalEngine() {
       if (window.lucide) lucide.createIcons();
     } catch (e) {}
 
-    if (state.currentPairData && state.currentBacktest) {
-      try {
-        renderCharts(state.currentPairData, state.currentBacktest);
-      } catch (e) {}
-    }
+    const triggerChartRender = () => {
+      if (state.currentPairData && state.currentBacktest) {
+        try {
+          renderCharts(state.currentPairData, state.currentBacktest);
+        } catch (e) {}
+      }
+      resizeAllCharts();
+    };
 
-    setTimeout(resizeAllCharts, 40);
-    setTimeout(resizeAllCharts, 200);
+    triggerChartRender();
+    if (window.requestAnimationFrame) {
+      requestAnimationFrame(triggerChartRender);
+    }
+    setTimeout(triggerChartRender, 50);
+    setTimeout(triggerChartRender, 180);
+    setTimeout(resizeAllCharts, 350);
   }
 
   // Expose globally so inline onclick handlers work everywhere
   window.switchView = switchView;
   window.switchTerminalView = switchView;
+  window.__renderAllCharts = () => {
+    if (state.currentPairData && state.currentBacktest) {
+      renderCharts(state.currentPairData, state.currentBacktest);
+    }
+    resizeAllCharts();
+  };
+  window.__resizeAllCharts = resizeAllCharts;
 
   // Global event delegation for clicks on any [data-view] element
   document.addEventListener('click', (e) => {
