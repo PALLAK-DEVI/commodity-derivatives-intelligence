@@ -96,8 +96,20 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* ================= 3D FLOATING GOLD MARKET CANVAS ================= */
+.gold-market-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+}
+
 body {
-  background-color: var(--bg-app);
+  background-color: #06080c;
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13px;
@@ -109,6 +121,9 @@ body {
   overflow-x: hidden;
   position: relative;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+[data-theme="light"] body {
+  background-color: #F3EFE6;
 }
 
 img, svg {
@@ -146,7 +161,9 @@ img, svg {
 /* ================= TOPBAR (TERMINAL HEADER) ================= */
 .terminal-topbar {
   height: 54px;
-  background: var(--bg-surface);
+  background: rgba(13, 17, 23, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border-color);
   padding: 0 16px;
   display: flex;
@@ -155,6 +172,9 @@ img, svg {
   position: sticky;
   top: 0;
   z-index: 1000;
+}
+[data-theme="light"] .terminal-topbar {
+  background: rgba(250, 249, 245, 0.92);
 }
 
 .topbar-left {
@@ -366,7 +386,9 @@ img, svg {
 /* ================= STREAMING MARKET TICKER TAPE ================= */
 .ticker-tape-container {
   height: 34px;
-  background: var(--bg-surface-elevated);
+  background: rgba(9, 12, 16, 0.86);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -374,6 +396,11 @@ img, svg {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   overflow: hidden;
+  position: relative;
+  z-index: 50;
+}
+[data-theme="light"] .ticker-tape-container {
+  background: rgba(239, 236, 228, 0.90);
 }
 
 .ticker-tape-header {
@@ -463,12 +490,15 @@ img, svg {
   min-height: calc(100vh - 88px);
   width: 100%;
   position: relative;
+  z-index: 10;
 }
 
 /* Left Sidebar Rail */
 .terminal-sidebar {
   width: 230px;
-  background: var(--bg-surface);
+  background: rgba(13, 17, 23, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-right: 1px solid var(--border-color);
   padding: 14px 10px;
   display: flex;
@@ -477,6 +507,9 @@ img, svg {
   flex-shrink: 0;
   transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 500;
+}
+[data-theme="light"] .terminal-sidebar {
+  background: rgba(250, 249, 245, 0.90);
 }
 
 .sidebar-section-label {
@@ -634,18 +667,26 @@ img, svg {
 
 /* ================= PANELS, CARDS & GRIDS ================= */
 .panel-card {
-  background: var(--bg-surface);
+  background: rgba(13, 17, 23, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 16px 18px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  transition: border-color 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+[data-theme="light"] .panel-card {
+  background: rgba(250, 249, 245, 0.92);
 }
 .panel-card-inner {
-  background: var(--bg-app);
+  background: rgba(9, 12, 16, 0.75);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 14px;
+}
+[data-theme="light"] .panel-card-inner {
+  background: rgba(243, 239, 230, 0.85);
 }
 
 .panel-header-clean {
