@@ -103,17 +103,31 @@
       }
     };
     window.switchView = window.switchTerminalView;
+
+    window.toggleMobileSidebar = function(forceOpen) {
+      var sb = document.querySelector('.terminal-sidebar');
+      var ov = document.getElementById('sidebarOverlay');
+      if (!sb) return;
+      var isOpen = (forceOpen !== undefined) ? forceOpen : !sb.classList.contains('mobile-open');
+      if (isOpen) {
+        sb.classList.add('mobile-open');
+        if (ov) ov.classList.add('active');
+      } else {
+        sb.classList.remove('mobile-open');
+        if (ov) ov.classList.remove('active');
+      }
+    };
   </script>
 </head>
 <body>
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
-  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+  <div id="sidebarOverlay" class="sidebar-overlay" onclick="window.toggleMobileSidebar(false)"></div>
 
   <!-- Terminal Top Header Bar -->
   <header class="terminal-topbar">
     <div class="topbar-left">
-      <button id="btnMobileMenu" class="btn-topbar-icon mobile-only" title="Open Navigation Menu">
+      <button id="btnMobileMenu" class="btn-topbar-icon mobile-only" title="Open Navigation Menu" onclick="window.toggleMobileSidebar()">
         <i data-lucide="menu"></i>
       </button>
       <button id="btnToggleSidebar" class="btn-topbar-icon desktop-only" title="Toggle Sidebar">
@@ -239,6 +253,13 @@
     <!-- Left Navigation Panel (ChatGPT / Dashboard Architecture) -->
     <aside class="terminal-sidebar">
       <div class="sidebar-top">
+        <div class="sidebar-mobile-header mobile-only">
+          <div class="sidebar-mobile-brand">
+            <i data-lucide="terminal" style="width:16px; height:16px; color:var(--accent-gold);"></i>
+            <span>Menu &bull; Track 03</span>
+          </div>
+          <button type="button" id="btnCloseMobileSidebar" class="btn-sidebar-mobile-close" title="Close Menu" onclick="window.toggleMobileSidebar(false)">&times;</button>
+        </div>
         <div class="sidebar-section-label">MAIN WORKSPACE</div>
         <nav class="sidebar-nav">
           <button type="button" class="nav-item active" data-view="view-dashboard" onclick="switchTerminalView('view-dashboard')">

@@ -163,6 +163,69 @@ img, svg {
   gap: 12px;
 }
 
+.mobile-only {
+  display: none !important;
+}
+.desktop-only {
+  display: inline-flex !important;
+}
+
+/* Mobile Sidebar Backdrop Overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile Sidebar Close Header */
+.sidebar-mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+.sidebar-mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 0.80rem;
+  color: var(--text-primary);
+}
+.btn-sidebar-mobile-close {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-sidebar-mobile-close:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-gold);
+}
+
 .btn-topbar-icon {
   background: transparent;
   border: 1px solid var(--border-color);
@@ -175,6 +238,7 @@ img, svg {
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 .btn-topbar-icon svg {
   width: 17px;
@@ -1672,8 +1736,8 @@ img, svg {
 
 /* Tablet Portrait & Large Phones (<= 900px) */
 @media (max-width: 900px) {
-  .mobile-only { display: inline-flex; }
-  .desktop-only { display: none; }
+  .mobile-only { display: inline-flex !important; }
+  .desktop-only { display: none !important; }
   
   .terminal-topbar {
     padding: 0 12px;
@@ -1681,16 +1745,31 @@ img, svg {
   
   .terminal-sidebar {
     position: fixed;
-    top: 54px;
-    left: -260px;
+    top: 0;
+    left: -320px;
     bottom: 0;
-    width: 250px;
-    box-shadow: 0 0 24px rgba(0, 0, 0, 0.6);
-    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1300;
+    width: 280px;
+    max-width: 85vw;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-color);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.85);
+    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+    padding: 16px 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    visibility: hidden;
+    pointer-events: none;
   }
   .terminal-sidebar.mobile-open {
-    left: 0;
+    left: 0 !important;
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
   
   .terminal-workspace {

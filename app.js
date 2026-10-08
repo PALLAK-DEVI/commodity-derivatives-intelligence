@@ -2053,16 +2053,34 @@ function bootInstitutionalEngine() {
 
   // Mobile menu drawer toggle
   const btnMobileMenu = document.getElementById('btnMobileMenu');
+  const btnCloseMobileSidebar = document.getElementById('btnCloseMobileSidebar');
   const sidebarOverlay = document.getElementById('sidebarOverlay');
   
-  btnMobileMenu?.addEventListener('click', () => {
-    document.querySelector('.terminal-sidebar')?.classList.toggle('mobile-open');
-    sidebarOverlay?.classList.toggle('active');
-  });
+  function toggleMobileSidebar(forceOpen) {
+    const sb = document.querySelector('.terminal-sidebar');
+    const ov = document.getElementById('sidebarOverlay');
+    if (!sb) return;
+    const isOpen = (forceOpen !== undefined) ? forceOpen : !sb.classList.contains('mobile-open');
+    if (isOpen) {
+      sb.classList.add('mobile-open');
+      ov?.classList.add('active');
+    } else {
+      sb.classList.remove('mobile-open');
+      ov?.classList.remove('active');
+    }
+  }
+  window.toggleMobileSidebar = toggleMobileSidebar;
 
+  btnMobileMenu?.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleMobileSidebar();
+  });
+  btnCloseMobileSidebar?.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleMobileSidebar(false);
+  });
   sidebarOverlay?.addEventListener('click', () => {
-    document.querySelector('.terminal-sidebar')?.classList.remove('mobile-open');
-    sidebarOverlay?.classList.remove('active');
+    toggleMobileSidebar(false);
   });
 
   // Initial Route Check on Startup
