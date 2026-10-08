@@ -595,11 +595,14 @@ img, svg {
 
 /* Switchable View Containers */
 .dashboard-view {
-  display: none;
+  display: none !important;
   width: 100%;
 }
+.dashboard-view:not(.active-view) {
+  display: none !important;
+}
 .dashboard-view.active-view {
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   gap: 18px;
   animation: fadeInView 0.18s ease-out;
