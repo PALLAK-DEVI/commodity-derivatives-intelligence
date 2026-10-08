@@ -977,7 +977,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    Plotly.newPlot('chartZScore', [
+    // Helper for resilient chart rendering
+    function safePlot(elementId, data, layout, config) {
+      try {
+        const el = document.getElementById(elementId);
+        if (el && window.Plotly) {
+          Plotly.newPlot(el, data, layout, config);
+        }
+      } catch (err) {
+        console.warn(`Chart render skipped/error for #${elementId}:`, err);
+      }
+    }
+
+    safePlot('chartZScore', [
       traceAtmosphericGlow,
       traceFairValue,
       traceUpper,
@@ -1006,7 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
       marker: { size: 7, color: '#d97706' },
       line: { color: '#d97706', width: 2, shape: 'spline' }
     };
-    Plotly.newPlot('chartTermStructure', [traceTerm], {
+    safePlot('chartTermStructure', [traceTerm], {
       ...plotLayoutBase,
       yaxis: { ...plotLayoutBase.yaxis, title: 'Forward Price (INR/g)' }
     }, { responsive: true, displayModeBar: false });
@@ -1035,7 +1047,7 @@ document.addEventListener('DOMContentLoaded', () => {
       increasing: { marker: { color: '#d97706' } },
       totals: { marker: { color: isLight ? '#059669' : '#10b981' } }
     }];
-    Plotly.newPlot('chartWaterfall', waterfallData, {
+    safePlot('chartWaterfall', waterfallData, {
       ...plotLayoutBase,
       yaxis: { ...plotLayoutBase.yaxis, title: 'PnL Attribution (INR)' }
     }, { responsive: true, displayModeBar: false });
@@ -1055,7 +1067,7 @@ document.addEventListener('DOMContentLoaded', () => {
       type: 'scatter',
       line: { color: '#94a3b8', width: 1.8 }
     };
-    Plotly.newPlot('chartNormalizedPrices', [traceA, traceB], {
+    safePlot('chartNormalizedPrices', [traceA, traceB], {
       ...plotLayoutBase,
       yaxis: { ...plotLayoutBase.yaxis, title: 'INR / 1g (999 Fineness)' }
     }, { responsive: true, displayModeBar: false });
@@ -1077,7 +1089,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mode: 'lines',
       line: { color: isLight ? '#0f172a' : '#94a3b8', dash: 'dash', width: 1.5 }
     };
-    Plotly.newPlot('chartKalman', [traceKalman, traceStaticBeta], {
+    safePlot('chartKalman', [traceKalman, traceStaticBeta], {
       ...plotLayoutBase,
       yaxis: { ...plotLayoutBase.yaxis, title: 'Dynamic Cointegration β(t)' }
     }, { responsive: true, displayModeBar: false });
@@ -1098,7 +1110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       name: `OLS Fit (Beta = ${backtestResults.beta})`,
       line: { color: isLight ? '#0f172a' : '#f8fafc', width: 1.5 }
     };
-    Plotly.newPlot('chartRegression', [traceScatter, regLine], {
+    safePlot('chartRegression', [traceScatter, regLine], {
       ...plotLayoutBase,
       xaxis: { ...plotLayoutBase.xaxis, title: 'Gold Spot Return (%)' },
       yaxis: { ...plotLayoutBase.yaxis, title: 'Strategy Return (%)' }
@@ -1620,22 +1632,51 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ================= 14. VIEW ROUTER (CHATGPT / DASHBOARD STYLE) =================
-  function switchView(viewId) {
-    if (!viewId) return;
+  const VIEW_ALIAS_MAP = {
+    'dashboard': 'view-dashboard',
+    'view-dashboard': 'view-dashboard',
+    'history': 'view-history',
+    'price-history': 'view-history',
+    'view-history': 'view-history',
+    'graph': 'view-graph',
+    'interactive-graph': 'view-graph',
+    'view-graph': 'view-graph',
+    'arbitrage': 'view-arbitrage',
+    'arbitrage-analysis': 'view-arbitrage',
+    'view-arbitrage': 'view-arbitrage',
+    'contracts': 'view-contracts',
+    'contract-comparison': 'view-contracts',
+    'view-contracts': 'view-contracts',
+    'marketdata': 'view-marketdata',
+    'market-data': 'view-marketdata',
+    'view-marketdata': 'view-marketdata',
+    'settings': 'view-settings',
+    'view-settings': 'view-settings'
+  };
 
-    // Normalize view ID
-    const targetId = viewId.startsWith('view-') ? viewId : ('view-' + viewId);
+  function resolveViewId(raw) {
+    if (!raw) return 'view-dashboard';
+    const clean = String(raw).replace(/^#/, '').trim().toLowerCase();
+    if (VIEW_ALIAS_MAP[clean]) return VIEW_ALIAS_MAP[clean];
+    if (document.getElementById(clean)) return clean;
+    if (document.getElementById('view-' + clean)) return 'view-' + clean;
+    return 'view-dashboard';
+  }
+
+  function switchView(viewId, updateHistory = true) {
+    const targetId = resolveViewId(viewId);
 
     // 1. Update Active Navigation State in Sidebar
     document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
-      const v = item.dataset.view || item.getAttribute('data-view');
-      item.classList.toggle('active', v === targetId || v === viewId);
+      const v = item.dataset.view || item.getAttribute('data-view') || '';
+      const resolvedV = resolveViewId(v);
+      item.classList.toggle('active', resolvedV === targetId);
     });
 
     // 2. Hide all views and reveal target view
     let found = false;
     document.querySelectorAll('.dashboard-view').forEach(view => {
-      if (view.id === targetId || view.id === viewId) {
+      if (view.id === targetId) {
         view.classList.add('active-view');
         found = true;
       } else {
@@ -1657,47 +1698,63 @@ document.addEventListener('DOMContentLoaded', () => {
     if (workspace) workspace.scrollTop = 0;
     window.scrollTo(0, 0);
 
-    // 5. Re-render charts & refresh Lucide icons for exposed containers
-    if (window.lucide) lucide.createIcons();
-    if (state.currentPairData && state.currentBacktest) {
-      renderCharts(state.currentPairData, state.currentBacktest);
+    // 5. Update browser URL hash/history without breaking file:// or sandboxed origins
+    if (updateHistory) {
+      const shortHash = targetId.replace('view-', '');
+      try {
+        if (window.location.protocol !== 'file:' && window.history && window.history.pushState) {
+          window.history.pushState({ view: targetId }, '', '#' + shortHash);
+        } else if (window.location.hash !== '#' + shortHash) {
+          window.location.hash = '#' + shortHash;
+        }
+      } catch (err) {
+        try {
+          if (window.location.hash !== '#' + shortHash) {
+            window.location.hash = '#' + shortHash;
+          }
+        } catch (e) {}
+      }
     }
-    setTimeout(resizeAllCharts, 60);
-    setTimeout(resizeAllCharts, 220);
+
+    // 6. Refresh icons & safely resize Plotly charts
+    try {
+      if (window.lucide) lucide.createIcons();
+    } catch (e) {}
+
+    setTimeout(resizeAllCharts, 50);
+    setTimeout(resizeAllCharts, 200);
   }
 
-  // Sidebar navigation click handlers (Event delegation + direct binding)
-  document.querySelector('.sidebar-nav')?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.nav-item');
-    if (btn) {
+  // Global event delegation for clicks on any [data-view] element
+  document.addEventListener('click', (e) => {
+    const navBtn = e.target.closest('[data-view]');
+    if (navBtn) {
       e.preventDefault();
-      const targetView = btn.dataset.view || btn.getAttribute('data-view');
+      const targetView = navBtn.dataset.view || navBtn.getAttribute('data-view');
       if (targetView) {
-        switchView(targetView);
-        try {
-          if (window.location.protocol !== 'file:' && history.pushState) {
-            history.pushState(null, null, '#' + targetView.replace('view-', ''));
-          }
-        } catch (err) {
-          // Ignore pushState errors in local/sandboxed origins
-        }
+        switchView(targetView, true);
       }
     }
   });
 
-  document.querySelectorAll('.sidebar-nav .nav-item').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const targetView = btn.dataset.view || btn.getAttribute('data-view');
-      if (targetView) {
-        switchView(targetView);
-        try {
-          if (window.location.protocol !== 'file:' && history.pushState) {
-            history.pushState(null, null, '#' + targetView.replace('view-', ''));
-          }
-        } catch (err) {}
-      }
-    });
+  // URL Hash & History Popstate event listeners
+  window.addEventListener('hashchange', () => {
+    const hash = window.location.hash;
+    if (hash) {
+      switchView(hash, false);
+    } else {
+      switchView('view-dashboard', false);
+    }
+  });
+
+  window.addEventListener('popstate', (e) => {
+    if (e.state && e.state.view) {
+      switchView(e.state.view, false);
+    } else if (window.location.hash) {
+      switchView(window.location.hash, false);
+    } else {
+      switchView('view-dashboard', false);
+    }
   });
 
   // Desktop sidebar collapse/expand toggle
@@ -1721,13 +1778,11 @@ document.addEventListener('DOMContentLoaded', () => {
     sidebarOverlay?.classList.remove('active');
   });
 
-  // URL Hash-based view activation on page load
+  // Initial Route Check on Startup
   if (window.location.hash) {
-    const rawHash = window.location.hash.replace('#', '');
-    const hashView = 'view-' + rawHash;
-    if (document.getElementById(hashView)) {
-      switchView(hashView);
-    }
+    switchView(window.location.hash, false);
+  } else {
+    switchView('view-dashboard', false);
   }
 
   // ================= 15. WEB AUDIO API CHIME SYNTHESIZER =================
