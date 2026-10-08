@@ -63,6 +63,14 @@
       </div>
 
       <div class="header-action-group">
+        <button id="btnStartTour" class="btn-ctrl btn-tour" title="Take a 30-Second Guided Tour of the Quantitative Terminal">
+          <i data-lucide="sparkles" class="btn-icon gold-glow"></i>
+          <span>Tour Terminal</span>
+        </button>
+        <button id="btnAudioToggle" class="btn-ctrl btn-audio active" title="Toggle Real-Time Audio Chime Alerts">
+          <i data-lucide="volume-2" id="audioIcon"></i>
+          <span id="audioStatusText">Audio Alerts</span>
+        </button>
         <button id="btnLiveTickToggle" class="btn-ctrl btn-live" title="Toggle Real-Time Simulated Tick Stream">
           <span class="ticker-pulse" id="streamPulse"></span>
           <span id="streamText">Live Stream</span>
@@ -214,9 +222,15 @@
 
           <div class="signal-core-row">
             <div class="signal-badge-wrapper">
-              <div class="signal-action-badge" id="signalActionBadge">
-                <i data-lucide="check-circle" class="badge-icon"></i>
-                <span id="signalActionText">BUY GOLDM / SELL GOLDTEN</span>
+              <div class="signal-badge-top-actions">
+                <div class="signal-action-badge" id="signalActionBadge">
+                  <i data-lucide="check-circle" class="badge-icon"></i>
+                  <span id="signalActionText">BUY GOLDM / SELL GOLDTEN</span>
+                </div>
+                <button type="button" class="btn-ctrl btn-order-basket-cta" id="btnOpenOrderBasket" title="Open 1-Click Multi-Leg Broker Order Basket">
+                  <i data-lucide="shopping-bag"></i>
+                  <span>1-Click Broker Order Basket</span>
+                </button>
               </div>
               <p class="signal-narrative" id="signalExplanation">
                 Current carry-adjusted spread has diverged to <strong id="heroZText">-2.34 σ</strong> (exceeding ±2.0 σ trigger hurdle). Target mean reversion generates <strong id="heroEdgeText">+₹8.42 / g</strong> net profit post-friction.
@@ -226,24 +240,79 @@
             <!-- Quad Quantitative Risk KPIs -->
             <div class="kpi-quad-grid">
               <div class="kpi-cell">
-                <div class="kpi-label">Current Z-Score</div>
+                <div class="kpi-label">Current Z-Score <span class="info-tooltip" title="Statistical number of standard deviations the spread has diverged from carry-adjusted fair value.">(?)</span></div>
                 <div class="kpi-value" id="kpiZScore">-2.34 σ</div>
                 <div class="kpi-sub">Hurdle: &plusmn;2.0 &sigma; | Stop: &plusmn;3.5 &sigma;</div>
               </div>
               <div class="kpi-cell">
-                <div class="kpi-label">Expected Net Edge</div>
+                <div class="kpi-label">Expected Net Edge <span class="info-tooltip" title="Net profit per gram remaining after deducting CTT, exchange fees, stamp duty, brokerage and GST.">(?)</span></div>
                 <div class="kpi-value green" id="kpiNetEdge">+₹8.42 / g</div>
                 <div class="kpi-sub">Survives All Indian Taxes</div>
               </div>
               <div class="kpi-cell">
-                <div class="kpi-label">Beta to Gold Spot</div>
+                <div class="kpi-label">Beta to Gold Spot <span class="info-tooltip" title="Sensitivity of spread to overall gold price movement. Beta ≈ 0.00 means zero directional market risk.">(?)</span></div>
                 <div class="kpi-value" id="btBeta">0.012 &approx; 0.00</div>
                 <div class="kpi-sub">Market Neutral Exposure</div>
               </div>
               <div class="kpi-cell">
-                <div class="kpi-label">Sharpe Ratio</div>
+                <div class="kpi-label">Sharpe Ratio <span class="info-tooltip" title="Risk-adjusted return of the 180-day walk-forward backtest above the 6.5% risk-free rate.">(?)</span></div>
                 <div class="kpi-value green" id="btSharpe">2.41</div>
                 <div class="kpi-sub">Walk-Forward Backtest</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Capital & Margin Position Sizer Widget -->
+        <div class="panel-card capital-sizer-panel" id="capitalSizerWidget">
+          <div class="panel-header-clean">
+            <div>
+              <div class="panel-tag"><i data-lucide="calculator"></i> PORTFOLIO POSITION SIZER &amp; MARGIN OPTIMIZER</div>
+              <h3>Interactive Trade Capital Allocator</h3>
+              <span class="sub-caption">Calculate max tradable paired baskets, 60% SPAN margin benefit, and net projected Rupee profit based on your account size.</span>
+            </div>
+            <div class="preset-capital-group">
+              <span class="preset-lbl">Quick Presets:</span>
+              <button type="button" class="btn-preset-cap active" data-cap="200000">₹2 Lakh</button>
+              <button type="button" class="btn-preset-cap" data-cap="500000">₹5 Lakh</button>
+              <button type="button" class="btn-preset-cap" data-cap="1000000">₹10 Lakh</button>
+              <button type="button" class="btn-preset-cap" data-cap="2500000">₹25 Lakh</button>
+            </div>
+          </div>
+
+          <div class="sizer-core-grid">
+            <div class="sizer-input-block">
+              <div class="sizer-input-head">
+                <label for="sizerCapitalSlider">Available Account Capital (INR):</label>
+                <span class="sizer-capital-val" id="sizerCapDisplay">₹2,00,000</span>
+              </div>
+              <input type="range" id="sizerCapitalSlider" min="100000" max="5000000" step="50000" value="200000" />
+              <div class="sizer-slider-range">
+                <span>₹1 Lakh</span>
+                <span>₹50 Lakh</span>
+              </div>
+            </div>
+
+            <div class="sizer-metrics-quad">
+              <div class="sizer-metric-item">
+                <span class="sm-lbl">Max Tradable Pairs</span>
+                <strong class="sm-val gold" id="sizerMaxBaskets">3 Baskets (300g)</strong>
+                <small class="sm-sub" id="sizerLotsSummary">3 Lots GOLDM vs 30 Lots GOLDTEN</small>
+              </div>
+              <div class="sizer-metric-item">
+                <span class="sm-lbl">SPAN Margin Blocked</span>
+                <strong class="sm-val" id="sizerMarginUsed">₹1,75,080</strong>
+                <small class="sm-sub green">60% Calendar Spread Benefit Applied</small>
+              </div>
+              <div class="sizer-metric-item">
+                <span class="sm-lbl">Free Margin Buffer</span>
+                <strong class="sm-val green" id="sizerFreeMargin">₹24,920</strong>
+                <small class="sm-sub">Buffer for MTM Fluctuation</small>
+              </div>
+              <div class="sizer-metric-item highlight-profit">
+                <span class="sm-lbl">Projected Net Edge (Post-Tax)</span>
+                <strong class="sm-val green" id="sizerNetEdgeProfit">+₹2,526</strong>
+                <small class="sm-sub" id="sizerReturnOnMargin">+1.44% RoM (per 4.2d cycle)</small>
               </div>
             </div>
           </div>
@@ -705,6 +774,75 @@
             </details>
           </div>
         </div>
+
+        <!-- Physical Bullion & Jeweler Inventory Hedging Desk Widget -->
+        <div class="panel-card bullion-hedging-panel" id="bullionHedgingWidget" style="margin-top:16px;">
+          <div class="panel-header-clean">
+            <div>
+              <div class="panel-tag"><i data-lucide="shield"></i> PHYSICAL BULLION &amp; JEWELRY INVENTORY HEDGING DESK</div>
+              <h3>Physical Inventory Price Lock &amp; Carry Optimization</h3>
+              <span class="sub-caption">For bullion dealers, refiners, and jewelers holding physical gold stock (995 dore or 999 bars) who want to hedge downside price risk.</span>
+            </div>
+            <div class="hedge-type-pill">
+              <i data-lucide="lock" style="width:12px; height:12px;"></i> Fixed Rate Lock-in Active
+            </div>
+          </div>
+
+          <div class="bullion-hedging-grid">
+            <div class="hedging-inputs-col">
+              <div class="form-group-hedge">
+                <label for="hedgeWeightInput">Physical Gold Inventory Stock (Grams):</label>
+                <div class="input-with-unit">
+                  <input type="number" id="hedgeWeightInput" class="form-control-compact" value="500" min="10" step="10" />
+                  <span class="unit-tag">Grams</span>
+                </div>
+              </div>
+
+              <div class="form-group-hedge">
+                <label for="hedgePuritySelect">Physical Metal Assay / Purity:</label>
+                <select id="hedgePuritySelect" class="form-control-compact">
+                  <option value="995">995 Fineness (Standard MCX Dore Kilobar - 99.5%)</option>
+                  <option value="999" selected>999 Fineness (London Good Delivery / Refined - 99.9%)</option>
+                </select>
+              </div>
+
+              <div class="form-group-hedge">
+                <label for="hedgeHorizonSelect">Planned Inventory Holding Period:</label>
+                <select id="hedgeHorizonSelect" class="form-control-compact">
+                  <option value="15">15 Days (Near Cycle)</option>
+                  <option value="30" selected>30 Days (1-Month Hedging Horizon)</option>
+                  <option value="60">60 Days (Bi-Monthly Cycle)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="hedging-results-col">
+              <div class="hedge-stat-box">
+                <span class="h-lbl">Recommended MCX Derivative Hedge</span>
+                <strong class="h-val gold" id="hedgeContractOutput">SELL 5 Lots GOLDM (100g)</strong>
+                <small class="h-sub" id="hedgeDeltaOutput">Residual Physical Delta: 0.00g (100% Fully Hedged)</small>
+              </div>
+
+              <div class="hedge-stat-box">
+                <span class="h-lbl">Guaranteed Locked-In Rate</span>
+                <strong class="h-val" id="hedgeLockedRate">₹72,450 / 10g</strong>
+                <small class="h-sub green">Protected against any gold market crash</small>
+              </div>
+
+              <div class="hedge-stat-box">
+                <span class="h-lbl">Financing Carry Earned / Saved</span>
+                <strong class="h-val green" id="hedgeCarrySaved">+₹1,787</strong>
+                <small class="h-sub">At 6.50% Repo Financing vs Physical Vault Cost</small>
+              </div>
+
+              <div class="hedge-stat-box">
+                <span class="h-lbl">Total Inventory Value Protected</span>
+                <strong class="h-val" id="hedgeTotalProtected">₹36,22,500</strong>
+                <small class="h-sub">Total 500g Inventory Notional</small>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ==========================================================================
@@ -864,6 +1002,154 @@
       </div>
     </div>
   </footer>
+
+  <!-- 1-Click Multi-Leg Broker Order Basket Modal -->
+  <div id="orderBasketModal" class="terminal-modal-overlay">
+    <div class="terminal-modal-card">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="panel-tag"><i data-lucide="shopping-bag"></i> 1-CLICK BROKER EXECUTION BASKET</div>
+          <h3>Multi-Leg Arbitrage Order Ticket</h3>
+        </div>
+        <button type="button" class="btn-modal-close" id="btnCloseOrderModal" title="Close Order Basket">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="order-summary-box">
+          <div class="summary-field">
+            <span>Strategy Type:</span>
+            <strong class="green" id="modalStratType">Market-Neutral Relative Value Spread</strong>
+          </div>
+          <div class="summary-field">
+            <span>Residual Market Delta:</span>
+            <strong class="green" id="modalResidualDelta">0.00g (100% Zero-Delta Hedged)</strong>
+          </div>
+          <div class="summary-field">
+            <span>SPAN Margin Required:</span>
+            <strong class="gold" id="modalSpanMargin">₹58,360 (w/ 60% Spread Discount)</strong>
+          </div>
+        </div>
+
+        <div class="order-legs-container">
+          <!-- Leg 1 -->
+          <div class="order-leg-card" id="modalLeg1Card">
+            <div class="leg-header">
+              <span class="leg-badge buy" id="modalLeg1Action">BUY LEG 1</span>
+              <strong class="leg-sym" id="modalLeg1Sym">GOLDM (Mini 100g)</strong>
+              <span class="leg-expiry" id="modalLeg1Expiry">Exp: 05 OCT 2026</span>
+            </div>
+            <div class="leg-details-grid">
+              <div class="ld-item">
+                <span>Lots:</span>
+                <strong id="modalLeg1Lots">1 Lot</strong>
+              </div>
+              <div class="ld-item">
+                <span>Total Quantity:</span>
+                <strong id="modalLeg1Qty">100 Grams</strong>
+              </div>
+              <div class="ld-item">
+                <span>Purity / Unit:</span>
+                <strong id="modalLeg1Purity">995 Fine / 10g</strong>
+              </div>
+              <div class="ld-item">
+                <span>Limit Order Price:</span>
+                <strong class="gold" id="modalLeg1Price">₹72,450.00</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leg 2 -->
+          <div class="order-leg-card" id="modalLeg2Card">
+            <div class="leg-header">
+              <span class="leg-badge sell" id="modalLeg2Action">SELL LEG 2</span>
+              <strong class="leg-sym" id="modalLeg2Sym">GOLDTEN (10g)</strong>
+              <span class="leg-expiry" id="modalLeg2Expiry">Exp: 28 OCT 2026</span>
+            </div>
+            <div class="leg-details-grid">
+              <div class="ld-item">
+                <span>Lots:</span>
+                <strong id="modalLeg2Lots">10 Lots</strong>
+              </div>
+              <div class="ld-item">
+                <span>Total Quantity:</span>
+                <strong id="modalLeg2Qty">100 Grams</strong>
+              </div>
+              <div class="ld-item">
+                <span>Purity / Unit:</span>
+                <strong id="modalLeg2Purity">999 Fine / 10g</strong>
+              </div>
+              <div class="ld-item">
+                <span>Limit Order Price:</span>
+                <strong class="gold" id="modalLeg2Price">₹72,920.00</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Broker JSON Code Preview Drawer -->
+        <div class="broker-json-preview">
+          <div class="preview-head">
+            <span>Zerodha Kite / Dhan Multi-Leg Order Payload (JSON):</span>
+          </div>
+          <pre id="modalBrokerJsonCode"><code>// Generated live by Quant Engine</code></pre>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-ctrl btn-secondary" id="btnCopyBrokerJson">
+          <i data-lucide="copy"></i> Copy Zerodha / Dhan JSON
+        </button>
+        <button type="button" class="btn-ctrl btn-primary" id="btnSimulateFill">
+          <i data-lucide="zap"></i> Simulate 1-Click Instant Execution
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive 30-Second Guided Product Tour Modal -->
+  <div id="tourModal" class="terminal-modal-overlay">
+    <div class="terminal-modal-card tour-modal-card">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="panel-tag"><i data-lucide="sparkles"></i> 30-SECOND INTERACTIVE TERMINAL TOUR</div>
+          <h3 id="tourStepTitle">1. Executive Arbitrage Signal Cockpit</h3>
+        </div>
+        <button type="button" class="btn-modal-close" id="btnCloseTourModal" title="Close Tour">&times;</button>
+      </div>
+
+      <div class="modal-body tour-body">
+        <div class="tour-visual-badge" id="tourVisualBadge">
+          <i data-lucide="layout-dashboard" class="tour-step-icon"></i>
+        </div>
+        <p class="tour-narrative" id="tourStepNarrative">
+          The Dashboard Cockpit scans MCX gold contracts across the entire term structure. When statistical deviation exceeds <strong>&plusmn;2.0&sigma;</strong>, the system triggers real-time <strong>BUY / SELL</strong> signals that survive all Indian taxes.
+        </p>
+
+        <div class="tour-key-features" id="tourKeyFeatures">
+          <div class="tour-feat-item">&check; 120ms Continuous Ingestion Stream</div>
+          <div class="tour-feat-item">&check; Pre-calculated Net Edge Post-CTT &amp; GST</div>
+          <div class="tour-feat-item">&check; Exact Zero Market Neutral Beta (&beta; &approx; 0.00)</div>
+        </div>
+
+        <div class="tour-progress-dots">
+          <span class="dot active" data-step="0"></span>
+          <span class="dot" data-step="1"></span>
+          <span class="dot" data-step="2"></span>
+          <span class="dot" data-step="3"></span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-ctrl btn-secondary" id="btnTourPrev" disabled>
+          &larr; Previous
+        </button>
+        <div class="tour-step-counter" id="tourStepCounter">Step 1 of 4</div>
+        <button type="button" class="btn-ctrl btn-primary" id="btnTourNext">
+          Next Step &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="app.js"></script>
