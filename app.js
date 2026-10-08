@@ -1117,12 +1117,11 @@ function bootInstitutionalEngine() {
     function safePlot(elementId, data, layout, config) {
       try {
         const el = document.getElementById(elementId);
-        if (el && window.Plotly) {
-          const effectiveLayout = { autosize: true, ...layout };
-          const effectiveConfig = { responsive: true, displayModeBar: false, ...config };
-          el._cachedPlot = { data, layout: effectiveLayout, config: effectiveConfig };
-          Plotly.react(el, data, effectiveLayout, effectiveConfig);
-        }
+        if (!el || !window.Plotly) return;
+        const effectiveLayout = { autosize: true, ...layout };
+        const effectiveConfig = { responsive: true, displayModeBar: false, ...config };
+        el._cachedPlot = { data, layout: effectiveLayout, config: effectiveConfig };
+        Plotly.newPlot(el, data, effectiveLayout, effectiveConfig);
       } catch (err) {
         console.warn(`Chart render skipped/error for #${elementId}:`, err);
       }
@@ -1163,9 +1162,9 @@ function bootInstitutionalEngine() {
     }, { responsive: true, displayModeBar: false });
 
     // 3. Waterfall Attribution (Section 04)
-    const grossVal = Math.round(backtestResults.grossPnl);
-    const slipVal = -Math.round(backtestResults.totalSlippage);
-    const taxVal = -Math.round(backtestResults.totalStatutoryTax);
+    const grossVal = Math.round(backtestResults.grossPnl || 0);
+    const slipVal = -Math.round(backtestResults.totalSlippage || 0);
+    const taxVal = -Math.round(backtestResults.totalStatutoryTax || 0);
     const netAlphaVal = grossVal + slipVal + taxVal;
 
     const waterfallData = [{
@@ -1192,10 +1191,10 @@ function bootInstitutionalEngine() {
     }, { responsive: true, displayModeBar: false });
 
     // 4. Normalized Historical Prices (All 4 MCX Gold Contracts)
-    const normDates = state.historicalData.map(d => d.date);
+    const normDates = (state.historicalData || []).map(d => d.date);
     const traceGoldM = {
       x: normDates,
-      y: state.historicalData.map(d => d.normalized.GOLDM),
+      y: (state.historicalData || []).map(d => (d.normalized ? d.normalized.GOLDM : (d.spotGold || 7200))),
       name: 'GOLDM (100g, 995 Fine → 999 Std)',
       type: 'scatter',
       mode: 'lines',
@@ -1203,7 +1202,7 @@ function bootInstitutionalEngine() {
     };
     const traceGoldTen = {
       x: normDates,
-      y: state.historicalData.map(d => d.normalized.GOLDTEN),
+      y: (state.historicalData || []).map(d => (d.normalized ? d.normalized.GOLDTEN : (d.spotGold || 7200))),
       name: 'GOLDTEN (10g, 999 Fine)',
       type: 'scatter',
       mode: 'lines',
@@ -1211,7 +1210,7 @@ function bootInstitutionalEngine() {
     };
     const traceGuinea = {
       x: normDates,
-      y: state.historicalData.map(d => d.normalized.GOLDGUINEA),
+      y: (state.historicalData || []).map(d => (d.normalized ? d.normalized.GOLDGUINEA : (d.spotGold || 7200))),
       name: 'GOLDGUINEA (8g, 999 Fine)',
       type: 'scatter',
       mode: 'lines',
@@ -1219,7 +1218,7 @@ function bootInstitutionalEngine() {
     };
     const tracePetal = {
       x: normDates,
-      y: state.historicalData.map(d => d.normalized.GOLDPETAL),
+      y: (state.historicalData || []).map(d => (d.normalized ? d.normalized.GOLDPETAL : (d.spotGold || 7200))),
       name: 'GOLDPETAL (1g, 999 Fine)',
       type: 'scatter',
       mode: 'lines',
@@ -1262,18 +1261,19 @@ function bootInstitutionalEngine() {
 
     // 6. Regression (Expandable)
     const traceScatter = {
-      x: backtestResults.spotReturns.map(v => v * 100),
-      y: backtestResults.stratReturns.map(v => v * 100),
+      x: (backtestResults.spotReturns || []).map(v => v * 100),
+      y: (backtestResults.stratReturns || []).map(v => v * 100),
       mode: 'markers',
       type: 'scatter',
       name: 'Daily Returns',
       marker: { color: 'rgba(217, 119, 6, 0.45)', size: 4 }
     };
+    const betaNum = parseFloat(backtestResults.beta || 0);
     const regLine = {
       x: [-2, 2],
-      y: [-2 * parseFloat(backtestResults.beta), 2 * parseFloat(backtestResults.beta)],
+      y: [-2 * betaNum, 2 * betaNum],
       mode: 'lines',
-      name: `OLS Fit (Beta = ${backtestResults.beta})`,
+      name: `OLS Fit (Beta = ${backtestResults.beta || '0.00'})`,
       line: { color: isLight ? '#0f172a' : '#f8fafc', width: 1.5 }
     };
     safePlot('chartRegression', [traceScatter, regLine], {
@@ -1884,12 +1884,13 @@ function bootInstitutionalEngine() {
         if (el.offsetParent !== null || el.clientWidth > 0) {
           if (el._cachedPlot) {
             try {
-              Plotly.react(el, el._cachedPlot.data, el._cachedPlot.layout, el._cachedPlot.config);
+              Plotly.newPlot(el, el._cachedPlot.data, el._cachedPlot.layout, el._cachedPlot.config);
+            } catch (e) {}
+          } else {
+            try {
+              Plotly.Plots.resize(el);
             } catch (e) {}
           }
-          try {
-            Plotly.Plots.resize(el);
-          } catch (e) {}
         }
       }
     });
@@ -1905,8 +1906,7 @@ function bootInstitutionalEngine() {
           const target = entry.target;
           if (target._cachedPlot && window.Plotly) {
             try {
-              Plotly.react(target, target._cachedPlot.data, target._cachedPlot.layout, target._cachedPlot.config);
-              Plotly.Plots.resize(target);
+              Plotly.newPlot(target, target._cachedPlot.data, target._cachedPlot.layout, target._cachedPlot.config);
             } catch (e) {}
           }
         }

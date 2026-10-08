@@ -103,15 +103,14 @@
             var cel = document.getElementById(id);
             if (cel && window.Plotly) {
               if (cel._cachedPlot && cel.offsetParent !== null) {
-                try { Plotly.react(cel, cel._cachedPlot.data, cel._cachedPlot.layout, cel._cachedPlot.config); } catch(e) {}
-              }
-              if (cel.data && cel.offsetParent !== null) {
+                try { Plotly.newPlot(cel, cel._cachedPlot.data, cel._cachedPlot.layout, cel._cachedPlot.config); } catch(e) {}
+              } else if (cel.data && cel.offsetParent !== null) {
                 try { Plotly.Plots.resize(cel); } catch(e) {}
               }
             }
           });
         };
-        setTimeout(doResize, 50);
+        setTimeout(doResize, 40);
         setTimeout(doResize, 180);
       }
     };
