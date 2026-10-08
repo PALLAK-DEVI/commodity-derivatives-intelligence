@@ -10,16 +10,20 @@
  * 5. Full MCX Bhavcopy CSV File Drag-and-Drop Ingestion & Audit Sheet Export
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+function bootInstitutionalEngine() {
   // Initialize Lucide Icons & KaTeX rendering
   if (window.lucide) lucide.createIcons();
   if (window.renderMathInElement) {
-    renderMathInElement(document.body, {
-      delimiters: [
-        { left: '$$', right: '$$', display: true },
-        { left: '$', right: '$', display: false }
-      ]
-    });
+    try {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ]
+      });
+    } catch(e) {
+      console.warn('KaTeX init warning:', e);
+    }
   }
 
   // Toast Notification System
@@ -1670,23 +1674,33 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
       const v = item.dataset.view || item.getAttribute('data-view') || '';
       const resolvedV = resolveViewId(v);
-      item.classList.toggle('active', resolvedV === targetId);
+      if (resolvedV === targetId) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
     });
 
-    // 2. Hide all views and reveal target view
+    // 2. Hide all views and reveal target view with explicit style enforcement
     let found = false;
     document.querySelectorAll('.dashboard-view').forEach(view => {
       if (view.id === targetId) {
         view.classList.add('active-view');
+        view.style.setProperty('display', 'flex', 'important');
         found = true;
       } else {
         view.classList.remove('active-view');
+        view.style.setProperty('display', 'none', 'important');
       }
     });
 
     if (!found) {
       console.warn(`View "${viewId}" not found, defaulting to view-dashboard`);
-      document.getElementById('view-dashboard')?.classList.add('active-view');
+      const defaultView = document.getElementById('view-dashboard');
+      if (defaultView) {
+        defaultView.classList.add('active-view');
+        defaultView.style.setProperty('display', 'flex', 'important');
+      }
     }
 
     // 3. Close mobile drawer if open
@@ -1724,6 +1738,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(resizeAllCharts, 50);
     setTimeout(resizeAllCharts, 200);
   }
+
+  // Expose globally so inline onclick handlers work everywhere
+  window.switchView = switchView;
+  window.switchTerminalView = switchView;
 
   // Global event delegation for clicks on any [data-view] element
   document.addEventListener('click', (e) => {
@@ -2196,5 +2214,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnCloseTourModal')?.addEventListener('click', closeTour);
   document.getElementById('btnTourNext')?.addEventListener('click', nextTourStep);
   document.getElementById('btnTourPrev')?.addEventListener('click', prevTourStep);
-});
+}
+
+// Resilient Bootloader: executes immediately if DOM is ready, or on DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootInstitutionalEngine);
+} else {
+  bootInstitutionalEngine();
+}
 

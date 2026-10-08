@@ -19,6 +19,89 @@
   
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Immediate Early Router Bootstrap -->
+  <script>
+    window.switchTerminalView = function(viewId, updateHash) {
+      if (updateHash === undefined) updateHash = true;
+      var raw = String(viewId || 'view-dashboard').replace(/^#/, '').toLowerCase().trim();
+      var map = {
+        'dashboard': 'view-dashboard',
+        'view-dashboard': 'view-dashboard',
+        'history': 'view-history',
+        'price-history': 'view-history',
+        'view-history': 'view-history',
+        'graph': 'view-graph',
+        'interactive-graph': 'view-graph',
+        'view-graph': 'view-graph',
+        'arbitrage': 'view-arbitrage',
+        'arbitrage-analysis': 'view-arbitrage',
+        'view-arbitrage': 'view-arbitrage',
+        'contracts': 'view-contracts',
+        'contract-comparison': 'view-contracts',
+        'view-contracts': 'view-contracts',
+        'marketdata': 'view-marketdata',
+        'market-data': 'view-marketdata',
+        'view-marketdata': 'view-marketdata',
+        'settings': 'view-settings',
+        'view-settings': 'view-settings'
+      };
+      var targetId = map[raw] || (document.getElementById(raw) ? raw : (document.getElementById('view-' + raw) ? ('view-' + raw) : 'view-dashboard'));
+      
+      var navButtons = document.querySelectorAll('.sidebar-nav .nav-item');
+      for (var i = 0; i < navButtons.length; i++) {
+        var btn = navButtons[i];
+        var v = btn.dataset.view || btn.getAttribute('data-view') || '';
+        var resolvedV = map[v.replace(/^#/, '').toLowerCase().trim()] || v;
+        if (resolvedV === targetId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      }
+
+      var views = document.querySelectorAll('.dashboard-view');
+      for (var j = 0; j < views.length; j++) {
+        var el = views[j];
+        if (el.id === targetId) {
+          el.classList.add('active-view');
+          el.style.setProperty('display', 'flex', 'important');
+        } else {
+          el.classList.remove('active-view');
+          el.style.setProperty('display', 'none', 'important');
+        }
+      }
+
+      var ws = document.querySelector('.terminal-workspace');
+      if (ws) ws.scrollTop = 0;
+      window.scrollTo(0, 0);
+
+      var sb = document.querySelector('.terminal-sidebar');
+      if (sb) sb.classList.remove('mobile-open');
+      var ov = document.getElementById('sidebarOverlay');
+      if (ov) ov.classList.remove('active');
+
+      if (updateHash) {
+        var shortHash = targetId.replace('view-', '');
+        try {
+          if (window.history && window.history.pushState) {
+            window.history.pushState({ view: targetId }, '', '#' + shortHash);
+          } else {
+            window.location.hash = '#' + shortHash;
+          }
+        } catch(e) {}
+      }
+
+      if (window.lucide) try { lucide.createIcons(); } catch(e) {}
+      if (window.Plotly) {
+        ['chartZScore', 'chartTermStructure', 'chartWaterfall', 'chartNormalizedPrices', 'chartKalman', 'chartRegression'].forEach(function(id) {
+          var cel = document.getElementById(id);
+          if (cel && cel.data && cel.offsetParent !== null) try { Plotly.Plots.resize(cel); } catch(e) {}
+        });
+      }
+    };
+    window.switchView = window.switchTerminalView;
+  </script>
 </head>
 <body>
   <!-- Toast Notification Container -->
@@ -140,31 +223,31 @@
       <div class="sidebar-top">
         <div class="sidebar-section-label">MAIN WORKSPACE</div>
         <nav class="sidebar-nav">
-          <button type="button" class="nav-item active" data-view="view-dashboard">
+          <button type="button" class="nav-item active" data-view="view-dashboard" onclick="switchTerminalView('view-dashboard')">
             <i data-lucide="layout-dashboard"></i>
             <span class="nav-label">Dashboard</span>
           </button>
-          <button type="button" class="nav-item" data-view="view-history">
+          <button type="button" class="nav-item" data-view="view-history" onclick="switchTerminalView('view-history')">
             <i data-lucide="history"></i>
             <span class="nav-label">Price History</span>
           </button>
-          <button type="button" class="nav-item" data-view="view-graph">
+          <button type="button" class="nav-item" data-view="view-graph" onclick="switchTerminalView('view-graph')">
             <i data-lucide="line-chart"></i>
             <span class="nav-label">Interactive Graph</span>
           </button>
-          <button type="button" class="nav-item" data-view="view-arbitrage">
+          <button type="button" class="nav-item" data-view="view-arbitrage" onclick="switchTerminalView('view-arbitrage')">
             <i data-lucide="zap"></i>
             <span class="nav-label">Arbitrage Analysis</span>
           </button>
-          <button type="button" class="nav-item" data-view="view-contracts">
+          <button type="button" class="nav-item" data-view="view-contracts" onclick="switchTerminalView('view-contracts')">
             <i data-lucide="layers"></i>
             <span class="nav-label">Contract Comparison</span>
           </button>
-          <button type="button" class="nav-item" data-view="view-marketdata">
+          <button type="button" class="nav-item" data-view="view-marketdata" onclick="switchTerminalView('view-marketdata')">
             <i data-lucide="database"></i>
             <span class="nav-label">Market Data</span>
           </button>
-          <button type="button" class="nav-item" data-view="view-settings">
+          <button type="button" class="nav-item" data-view="view-settings" onclick="switchTerminalView('view-settings')">
             <i data-lucide="sliders"></i>
             <span class="nav-label">Settings</span>
           </button>
