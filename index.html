@@ -249,18 +249,57 @@
           </div>
         </div>
 
-        <!-- Dashboard Z-Score Snapshot Chart -->
-        <div class="panel-card chart-panel">
+        <!-- Dashboard Z-Score Snapshot Chart & Quantitative Market Surface -->
+        <div class="panel-card chart-panel quant-surface-card" id="carrySpreadPanel">
           <div class="panel-header-clean">
             <div>
-              <h3>Dynamic Carry-Adjusted Spread &amp; Execution Bounds</h3>
-              <span class="sub-caption">Real-time Z-score deviation against &plusmn;2.0&sigma; entry thresholds and &plusmn;3.5&sigma; risk stops</span>
+              <div class="chart-header-tag">
+                <i data-lucide="activity" class="tag-icon"></i>
+                <span>QUANTITATIVE MARKET SURFACE &bull; CARRY EQUILIBRIUM</span>
+              </div>
+              <h3 class="chart-title-main">Dynamic Carry-Adjusted Spread &amp; Execution Bounds</h3>
+              <span class="sub-caption">Real-time relative value surface with continuous carry equilibrium, soft execution bands, and risk stops</span>
             </div>
-            <div class="chart-status-pill">
-              <span class="pill-dot green"></span> Active Signal
+            <div class="chart-header-actions">
+              <div class="chart-status-pill live-pulse-pill" id="chartLivePill">
+                <span class="pill-dot green beacon"></span>
+                <span id="chartLiveIndicatorText">LIVE TELEMETRY 120ms</span>
+              </div>
             </div>
           </div>
-          <div id="chartZScore" class="chart-container-terminal"></div>
+
+          <!-- Real-Time Institutional Telemetry Strip -->
+          <div class="quant-chart-telemetry-bar">
+            <div class="telemetry-stat">
+              <span class="t-lbl">CURRENT SPREAD</span>
+              <span class="t-val" id="chartTelSpread">+₹14.20 / g (-2.34σ)</span>
+            </div>
+            <div class="telemetry-stat">
+              <span class="t-lbl">FAIR VALUE (0.0σ)</span>
+              <span class="t-val" id="chartTelFair">₹12.10 / g</span>
+            </div>
+            <div class="telemetry-stat">
+              <span class="t-lbl">UPPER BOUND (SHORT)</span>
+              <span class="t-val warning" id="chartTelUpper">+2.00σ (+₹22.40)</span>
+            </div>
+            <div class="telemetry-stat">
+              <span class="t-lbl">LOWER BOUND (LONG)</span>
+              <span class="t-val success" id="chartTelLower">-2.00σ (-₹18.60)</span>
+            </div>
+            <div class="telemetry-stat">
+              <span class="t-lbl">CARRY FINANCING</span>
+              <span class="t-val" id="chartTelCarry">₹31.14 / g (24d)</span>
+            </div>
+            <div class="telemetry-stat stat-zone">
+              <span class="t-lbl">MARKET ZONE</span>
+              <span class="zone-badge-pill zone-long" id="chartTelZone">EXECUTABLE (LONG)</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Surface Chart Container with Ambient Depth -->
+          <div class="quant-chart-surface-wrapper">
+            <div id="chartZScore" class="chart-container-terminal quant-surface-canvas"></div>
+          </div>
         </div>
 
         <!-- Quick Telemetry Metric Bar -->

@@ -631,51 +631,363 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    // 1. Primary Z-Score Chart (Section 05)
-    const traceZ = {
-      x: pairData.dates,
-      y: pairData.zScores,
-      name: 'Dynamic Carry-Adjusted Z-Score',
-      type: 'scatter',
-      line: { color: isLight ? '#059669' : '#10b981', width: 2 }
-    };
-    const upperThreshold = {
-      x: [pairData.dates[0], pairData.dates[pairData.dates.length - 1]],
-      y: [state.zEntry, state.zEntry],
-      name: `+${state.zEntry.toFixed(1)}σ Short Hurdle`,
+    // 1. Primary Quantitative Market Surface: Dynamic Carry-Adjusted Spread & Execution Bounds
+    const dates = pairData.dates;
+    const zScores = pairData.zScores;
+    const spreads = pairData.carryAdjustedSpreads;
+    const carries = pairData.carries;
+    const n = dates.length;
+    const latestIdx = n - 1;
+    const latestZ = zScores[latestIdx];
+    const latestSpread = spreads[latestIdx];
+    const latestCarry = carries[latestIdx] || 0;
+
+    // Compute rolling fair-value equilibrium baseline and rolling std for tooltip
+    const customData = [];
+    const fairValues = [];
+    for (let i = 0; i < n; i++) {
+      let meanVal = 0;
+      let stdVal = 4.0;
+      if (i >= state.lookbackDays) {
+        const slice = spreads.slice(i - state.lookbackDays, i);
+        meanVal = slice.reduce((a, b) => a + b, 0) / slice.length;
+        const variance = slice.reduce((a, b) => a + Math.pow(b - meanVal, 2), 0) / slice.length;
+        stdVal = Math.sqrt(variance) || 4.0;
+      } else {
+        meanVal = spreads[i];
+      }
+      fairValues.push(0); // Normalized Z-score equilibrium baseline is 0.0σ
+
+      const zVal = zScores[i];
+      const spreadINR = `${spreads[i] >= 0 ? '+' : ''}₹${spreads[i].toFixed(2)}/g`;
+      const fairINR = `₹${meanVal.toFixed(2)}/g`;
+      const carryINR = `₹${carries[i].toFixed(2)}/g`;
+      const upperINR = `+₹${(meanVal + state.zEntry * stdVal).toFixed(2)}`;
+      const lowerINR = `-₹${Math.abs(meanVal - state.zEntry * stdVal).toFixed(2)}`;
+      
+      let statusStr = 'NEUTRAL (FAIR PRICING)';
+      if (Math.abs(zVal) >= state.zStopLoss) {
+        statusStr = 'RISK LIMIT (STOP-LOSS EXCEEDED)';
+      } else if (zVal <= -state.zEntry) {
+        statusStr = 'EXECUTABLE (LONG SPREAD OPPORTUNITY)';
+      } else if (zVal >= state.zEntry) {
+        statusStr = 'EXECUTABLE (SHORT SPREAD OPPORTUNITY)';
+      }
+
+      customData.push([
+        spreadINR,
+        carryINR,
+        fairINR,
+        upperINR,
+        lowerINR,
+        statusStr
+      ]);
+    }
+
+    // Layer A: Atmospheric Glow Trace (Wide translucent underlayer for neon depth)
+    const traceAtmosphericGlow = {
+      x: dates,
+      y: zScores,
+      name: 'Spread Neon Glow',
       type: 'scatter',
       mode: 'lines',
-      line: { color: '#ef4444', dash: 'dash', width: 1.2 }
-    };
-    const lowerThreshold = {
-      x: [pairData.dates[0], pairData.dates[pairData.dates.length - 1]],
-      y: [-state.zEntry, -state.zEntry],
-      name: `-${state.zEntry.toFixed(1)}σ Long Hurdle`,
-      type: 'scatter',
-      mode: 'lines',
-      line: { color: isLight ? '#059669' : '#10b981', dash: 'dash', width: 1.2 }
-    };
-    const stopLossUpper = {
-      x: [pairData.dates[0], pairData.dates[pairData.dates.length - 1]],
-      y: [state.zStopLoss, state.zStopLoss],
-      name: `+${state.zStopLoss.toFixed(1)}σ Stop-Loss`,
-      type: 'scatter',
-      mode: 'lines',
-      line: { color: '#dc2626', dash: 'dot', width: 1.0 }
-    };
-    const stopLossLower = {
-      x: [pairData.dates[0], pairData.dates[pairData.dates.length - 1]],
-      y: [-state.zStopLoss, -state.zStopLoss],
-      name: `-${state.zStopLoss.toFixed(1)}σ Stop-Loss`,
-      type: 'scatter',
-      mode: 'lines',
-      line: { color: '#dc2626', dash: 'dot', width: 1.0 }
+      line: {
+        color: isLight ? 'rgba(5, 150, 105, 0.22)' : 'rgba(0, 245, 155, 0.22)',
+        width: 8,
+        shape: 'spline',
+        smoothing: 0.85
+      },
+      hoverinfo: 'skip',
+      showlegend: false
     };
 
-    Plotly.newPlot('chartZScore', [traceZ, upperThreshold, lowerThreshold, stopLossUpper, stopLossLower], {
+    // Layer B: Carry-Adjusted Fair Value Baseline (0.0σ Equilibrium)
+    const traceFairValue = {
+      x: dates,
+      y: fairValues,
+      name: 'CARRY-ADJUSTED FAIR VALUE (0.0σ)',
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: isLight ? '#475569' : '#38bdf8',
+        width: 1.8,
+        dash: 'dot'
+      },
+      hoverinfo: 'skip'
+    };
+
+    // Layer C: Upper Execution Bound (+2.0σ)
+    const traceUpper = {
+      x: [dates[0], dates[n - 1]],
+      y: [state.zEntry, state.zEntry],
+      name: `+${state.zEntry.toFixed(1)}σ UPPER BOUND (SHORT)`,
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: '#f59e0b',
+        width: 1.6,
+        dash: 'dash'
+      },
+      hoverinfo: 'skip'
+    };
+
+    // Layer D: Lower Execution Bound (-2.0σ)
+    const traceLower = {
+      x: [dates[0], dates[n - 1]],
+      y: [-state.zEntry, -state.zEntry],
+      name: `-${state.zEntry.toFixed(1)}σ LOWER BOUND (LONG)`,
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: isLight ? '#059669' : '#10b981',
+        width: 1.6,
+        dash: 'dash'
+      },
+      hoverinfo: 'skip'
+    };
+
+    // Layer E: Stop-Loss Risk Bounds (±3.5σ)
+    const traceStopUpper = {
+      x: [dates[0], dates[n - 1]],
+      y: [state.zStopLoss, state.zStopLoss],
+      name: `+${state.zStopLoss.toFixed(1)}σ STOP-LOSS RISK`,
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: '#ef4444',
+        width: 1.2,
+        dash: 'dot'
+      },
+      hoverinfo: 'skip'
+    };
+    const traceStopLower = {
+      x: [dates[0], dates[n - 1]],
+      y: [-state.zStopLoss, -state.zStopLoss],
+      name: `-${state.zStopLoss.toFixed(1)}σ STOP-LOSS RISK`,
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: '#ef4444',
+        width: 1.2,
+        dash: 'dot'
+      },
+      hoverinfo: 'skip'
+    };
+
+    // Layer F: Main Dynamic Spread Curve
+    const traceZ = {
+      x: dates,
+      y: zScores,
+      name: 'DYNAMIC CARRY-ADJUSTED SPREAD',
+      type: 'scatter',
+      mode: 'lines',
+      line: {
+        color: isLight ? '#059669' : '#00f59b',
+        width: 2.8,
+        shape: 'spline',
+        smoothing: 0.85
+      },
+      customdata: customData,
+      hovertemplate: 
+        '<b style="font-size:12px;">MCX GOLD &bull; %{x}</b><br>' +
+        '─────────────────────────────────────<br>' +
+        '<b>Dynamic Spread:</b>        <b>%{customdata[0]}</b> (%{y:+.2f} σ)<br>' +
+        '<b>Carry Adjustment:</b>      %{customdata[1]}<br>' +
+        '<b>Fair Value (0.0σ):</b>     %{customdata[2]}<br>' +
+        '<b>Upper Bound (+2.0σ):</b>   %{customdata[3]}<br>' +
+        '<b>Lower Bound (-2.0σ):</b>   %{customdata[4]}<br>' +
+        '─────────────────────────────────────<br>' +
+        '<b>Status:</b> <b>%{customdata[5]}</b><extra></extra>'
+    };
+
+    // Layer G: Latest Point Live Glowing Marker & Outer Ring
+    const traceLatestOuter = {
+      x: [dates[latestIdx]],
+      y: [latestZ],
+      mode: 'markers',
+      type: 'scatter',
+      marker: {
+        size: 16,
+        color: 'rgba(16, 185, 129, 0.35)',
+        line: { color: isLight ? '#059669' : '#00f59b', width: 2 }
+      },
+      hoverinfo: 'skip',
+      showlegend: false
+    };
+    const traceLatestInner = {
+      x: [dates[latestIdx]],
+      y: [latestZ],
+      name: 'LIVE TICK SPREAD',
+      mode: 'markers',
+      type: 'scatter',
+      marker: {
+        size: 7,
+        color: '#ffffff',
+        line: { color: isLight ? '#059669' : '#00f59b', width: 2.5 }
+      },
+      hoverinfo: 'skip',
+      showlegend: false
+    };
+
+    // Market Zone Shaded Rectangles (Soft Dimensional Depth Bands)
+    const surfaceShapes = [
+      // 1. Extreme Risk Top (Above +3.5σ)
+      {
+        type: 'rect',
+        xref: 'paper',
+        x0: 0,
+        x1: 1,
+        yref: 'y',
+        y0: state.zStopLoss,
+        y1: 4.5,
+        fillcolor: isLight ? 'rgba(239, 68, 68, 0.08)' : 'rgba(239, 68, 68, 0.07)',
+        line: { width: 0 },
+        layer: 'below'
+      },
+      // 2. Executable Short Region (+2.0σ to +3.5σ)
+      {
+        type: 'rect',
+        xref: 'paper',
+        x0: 0,
+        x1: 1,
+        yref: 'y',
+        y0: state.zEntry,
+        y1: state.zStopLoss,
+        fillcolor: isLight ? 'rgba(245, 158, 11, 0.08)' : 'rgba(245, 158, 11, 0.08)',
+        line: { width: 0 },
+        layer: 'below'
+      },
+      // 3. Fair Value / Neutral Equilibrium Region (-2.0σ to +2.0σ)
+      {
+        type: 'rect',
+        xref: 'paper',
+        x0: 0,
+        x1: 1,
+        yref: 'y',
+        y0: -state.zEntry,
+        y1: state.zEntry,
+        fillcolor: isLight ? 'rgba(216, 210, 198, 0.15)' : 'rgba(99, 102, 241, 0.035)',
+        line: { width: 0 },
+        layer: 'below'
+      },
+      // 4. Executable Long Region (-3.5σ to -2.0σ)
+      {
+        type: 'rect',
+        xref: 'paper',
+        x0: 0,
+        x1: 1,
+        yref: 'y',
+        y0: -state.zStopLoss,
+        y1: -state.zEntry,
+        fillcolor: isLight ? 'rgba(5, 150, 105, 0.09)' : 'rgba(16, 185, 129, 0.09)',
+        line: { width: 0 },
+        layer: 'below'
+      },
+      // 5. Extreme Risk Bottom (Below -3.5σ)
+      {
+        type: 'rect',
+        xref: 'paper',
+        x0: 0,
+        x1: 1,
+        yref: 'y',
+        y0: -4.5,
+        y1: -state.zStopLoss,
+        fillcolor: isLight ? 'rgba(239, 68, 68, 0.08)' : 'rgba(239, 68, 68, 0.07)',
+        line: { width: 0 },
+        layer: 'below'
+      }
+    ];
+
+    // Right-side Boundary Badges & Live Floating Readout
+    const surfaceAnnotations = [
+      // Live Pin Readout at Latest Point
+      {
+        x: dates[latestIdx],
+        y: latestZ,
+        xref: 'x',
+        yref: 'y',
+        text: `<b>CURRENT SPREAD</b><br><b>${latestZ >= 0 ? '+' : ''}${latestZ.toFixed(2)} σ</b> (₹${latestSpread.toFixed(2)}/g)<br><span style="color:${isLight ? '#059669' : '#00f59b'}; font-weight:800;">LIVE ●</span>`,
+        showarrow: true,
+        arrowhead: 2,
+        arrowsize: 1,
+        arrowwidth: 1.5,
+        arrowcolor: isLight ? '#059669' : '#00f59b',
+        ax: -65,
+        ay: latestZ >= 0 ? 45 : -45,
+        bgcolor: isLight ? '#FAF9F5' : '#0B0F17',
+        bordercolor: isLight ? '#059669' : '#00f59b',
+        borderwidth: 1.5,
+        borderpad: 5,
+        font: { family: 'JetBrains Mono', size: 9, color: isLight ? '#17191A' : '#F8FAFC' }
+      },
+      // Upper Bound Right Annotation
+      {
+        xref: 'paper',
+        x: 0.995,
+        y: state.zEntry,
+        yref: 'y',
+        text: `<b>+${state.zEntry.toFixed(1)}σ UPPER BOUND</b>`,
+        showarrow: false,
+        xanchor: 'right',
+        yanchor: 'bottom',
+        font: { family: 'JetBrains Mono', size: 8, color: '#f59e0b' }
+      },
+      // Lower Bound Right Annotation
+      {
+        xref: 'paper',
+        x: 0.995,
+        y: -state.zEntry,
+        yref: 'y',
+        text: `<b>-${state.zEntry.toFixed(1)}σ LOWER BOUND</b>`,
+        showarrow: false,
+        xanchor: 'right',
+        yanchor: 'top',
+        font: { family: 'JetBrains Mono', size: 8, color: isLight ? '#059669' : '#10b981' }
+      },
+      // Fair Value Right Annotation
+      {
+        xref: 'paper',
+        x: 0.995,
+        y: 0.0,
+        yref: 'y',
+        text: `<b>0.0σ FAIR VALUE</b>`,
+        showarrow: false,
+        xanchor: 'right',
+        yanchor: 'middle',
+        font: { family: 'JetBrains Mono', size: 8, color: isLight ? '#64748b' : '#38bdf8' }
+      }
+    ];
+
+    const zScoreLayout = {
       ...plotLayoutBase,
-      yaxis: { ...plotLayoutBase.yaxis, title: 'Z-Score (σ)' }
-    }, { responsive: true, displayModeBar: false });
+      margin: { l: 46, r: 16, t: 26, b: 32 },
+      yaxis: {
+        ...plotLayoutBase.yaxis,
+        title: { text: 'Dynamic Spread Deviation (Z-Score σ)', font: { size: 10, color: isLight ? '#17191A' : '#94A3B8' } },
+        range: [-4.2, 4.2],
+        tickvals: [-3.5, -2.0, -1.0, 0, 1.0, 2.0, 3.5],
+        ticktext: ['-3.5σ Stop', '-2.0σ Long', '-1.0σ', '0.0σ Fair', '+1.0σ', '+2.0σ Short', '+3.5σ Stop']
+      },
+      shapes: surfaceShapes,
+      annotations: surfaceAnnotations,
+      hoverlabel: {
+        bgcolor: isLight ? '#FAF9F5' : '#0B0F17',
+        bordercolor: isLight ? '#059669' : '#00f59b',
+        font: { family: 'JetBrains Mono', size: 11, color: isLight ? '#17191A' : '#F8FAFC' }
+      }
+    };
+
+    Plotly.newPlot('chartZScore', [
+      traceAtmosphericGlow,
+      traceFairValue,
+      traceUpper,
+      traceLower,
+      traceStopUpper,
+      traceStopLower,
+      traceZ,
+      traceLatestOuter,
+      traceLatestInner
+    ], zScoreLayout, { responsive: true, displayModeBar: false });
 
     // 2. Term Structure Curve (Section 03)
     const baseP = 7240;
@@ -874,6 +1186,63 @@ document.addEventListener('DOMContentLoaded', () => {
       actionBadge.style.background = 'var(--card-bg)';
       actionText.textContent = `MONITORING SPREAD (NO ACTIVE TRADE)`;
       expText.innerHTML = `Current Z-score of <strong>${latestZ.toFixed(2)} σ</strong> is within neutral bounds (&plusmn;${state.zEntry.toFixed(1)}&sigma;). Continuous risk engines active; no trade action recommended.`;
+    }
+
+    // Update Real-Time Quantitative Telemetry Strip above the Market Surface
+    const latestSpread = pairData.carryAdjustedSpreads[latestIdx];
+    const latestCarryVal = pairData.carries[latestIdx] || carryG;
+    
+    let curMean = 0;
+    let curStd = 4.0;
+    if (latestIdx >= state.lookbackDays) {
+      const slice = pairData.carryAdjustedSpreads.slice(latestIdx - state.lookbackDays, latestIdx);
+      curMean = slice.reduce((a, b) => a + b, 0) / slice.length;
+      const variance = slice.reduce((a, b) => a + Math.pow(b - curMean, 2), 0) / slice.length;
+      curStd = Math.sqrt(variance) || 4.0;
+    } else {
+      curMean = latestSpread;
+    }
+    const upperLimitINR = curMean + state.zEntry * curStd;
+    const lowerLimitINR = curMean - state.zEntry * curStd;
+
+    const telSpread = document.getElementById('chartTelSpread');
+    const telFair = document.getElementById('chartTelFair');
+    const telUpper = document.getElementById('chartTelUpper');
+    const telLower = document.getElementById('chartTelLower');
+    const telCarry = document.getElementById('chartTelCarry');
+    const telZone = document.getElementById('chartTelZone');
+
+    if (telSpread) {
+      const colorVal = latestZ <= -state.zEntry ? 'var(--signal-green)' : (latestZ >= state.zEntry ? 'var(--accent-gold)' : 'var(--text-primary)');
+      telSpread.innerHTML = `<span style="color:${colorVal};">${latestSpread >= 0 ? '+' : ''}₹${latestSpread.toFixed(2)}/g</span> <small style="font-size:0.68rem; color:var(--text-muted);">(${latestZ >= 0 ? '+' : ''}${latestZ.toFixed(2)}σ)</small>`;
+    }
+    if (telFair) {
+      telFair.textContent = `₹${curMean.toFixed(2)}/g (0.0σ)`;
+    }
+    if (telUpper) {
+      telUpper.textContent = `+${state.zEntry.toFixed(1)}σ (+₹${upperLimitINR.toFixed(2)})`;
+    }
+    if (telLower) {
+      telLower.textContent = `-${state.zEntry.toFixed(1)}σ (-₹${Math.abs(lowerLimitINR).toFixed(2)})`;
+    }
+    if (telCarry) {
+      telCarry.textContent = `₹${latestCarryVal.toFixed(2)}/g (${dt}d)`;
+    }
+    if (telZone) {
+      telZone.className = 'zone-badge-pill';
+      if (Math.abs(latestZ) >= state.zStopLoss) {
+        telZone.classList.add('zone-stop');
+        telZone.textContent = 'STOP-LOSS EXCEEDED';
+      } else if (latestZ <= -state.zEntry) {
+        telZone.classList.add('zone-long');
+        telZone.textContent = 'EXECUTABLE (LONG SPREAD)';
+      } else if (latestZ >= state.zEntry) {
+        telZone.classList.add('zone-short');
+        telZone.textContent = 'EXECUTABLE (SHORT SPREAD)';
+      } else {
+        telZone.classList.add('zone-neutral');
+        telZone.textContent = 'FAIR / NEUTRAL';
+      }
     }
 
     // Populate Trade History Ledger Table

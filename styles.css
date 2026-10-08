@@ -869,9 +869,10 @@ img, svg {
   margin-top: 2px;
 }
 
-/* ================= CHARTS ================= */
+/* ================= CHARTS & QUANT SURFACE ================= */
 .chart-panel {
-  padding: 14px 16px;
+  padding: 16px 18px;
+  position: relative;
 }
 .grid-split-charts {
   display: grid;
@@ -880,7 +881,7 @@ img, svg {
 }
 .chart-container-terminal {
   width: 100%;
-  height: 340px;
+  height: 380px;
   background: var(--plot-bg);
   border-radius: var(--radius-sm);
 }
@@ -889,6 +890,193 @@ img, svg {
   height: 240px;
   background: var(--plot-bg);
   border-radius: var(--radius-sm);
+}
+
+/* Institutional Quantitative Market Surface Card */
+.quant-surface-card {
+  background: linear-gradient(180deg, var(--bg-surface) 0%, rgba(11, 15, 23, 0.98) 100%);
+  border: 1px solid var(--border-color);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 8px 32px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="light"] .quant-surface-card {
+  background: linear-gradient(180deg, #FAF9F5 0%, #F3EFE6 100%);
+  border-color: #D8D2C6;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.chart-header-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: var(--accent-gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.chart-header-tag .tag-icon {
+  width: 12px;
+  height: 12px;
+}
+.chart-title-main {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.live-pulse-pill {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--signal-green);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 3px 10px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pill-dot.beacon {
+  position: relative;
+  box-shadow: 0 0 8px var(--signal-green);
+}
+.pill-dot.beacon::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--signal-green);
+  animation: beaconPulse 1.8s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+@keyframes beaconPulse {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Real-Time Quantitative Telemetry Bar */
+.quant-chart-telemetry-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin: 12px 0 14px 0;
+  padding: 10px 14px;
+  background: var(--bg-app);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+
+.telemetry-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.telemetry-stat .t-lbl {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.telemetry-stat .t-val {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.telemetry-stat .t-val.success {
+  color: var(--signal-green);
+}
+.telemetry-stat .t-val.warning {
+  color: var(--accent-gold);
+}
+.telemetry-stat .t-val.danger {
+  color: var(--signal-red);
+}
+
+.telemetry-stat.stat-zone {
+  align-items: flex-start;
+}
+.zone-badge-pill {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.zone-badge-pill.zone-long {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--signal-green);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.zone-badge-pill.zone-short {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-gold);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+.zone-badge-pill.zone-neutral {
+  background: rgba(100, 116, 139, 0.15);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+.zone-badge-pill.zone-stop {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--signal-red);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  animation: stopBlink 1.2s infinite alternate;
+}
+@keyframes stopBlink {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; box-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
+}
+
+/* Layered Dimensional Surface Canvas Container */
+.quant-chart-surface-wrapper {
+  position: relative;
+  background: radial-gradient(circle at 50% 15%, rgba(16, 185, 129, 0.05) 0%, rgba(11, 15, 23, 0.98) 75%, #0B0F17 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="light"] .quant-chart-surface-wrapper {
+  background: radial-gradient(circle at 50% 15%, rgba(184, 106, 22, 0.04) 0%, rgba(250, 249, 245, 0.98) 75%, #FAF9F5 100%);
+  border-color: #D8D2C6;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.03);
+}
+
+.quant-surface-canvas {
+  width: 100%;
+  height: 400px;
+}
+
+@media (max-width: 900px) {
+  .quant-chart-telemetry-bar {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+}
+@media (max-width: 580px) {
+  .quant-chart-telemetry-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .quant-surface-canvas {
+    height: 320px;
+  }
 }
 
 /* Carry Sliders Inline */
