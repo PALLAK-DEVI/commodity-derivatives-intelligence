@@ -18,7 +18,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=2.4" />
+  <link rel="stylesheet" href="styles.css?v=2.2" />
 
   <!-- Immediate Early Router Bootstrap -->
   <script>
@@ -106,9 +106,6 @@
   </script>
 </head>
 <body>
-  <!-- 3D Floating Gold Market Environment Canvas -->
-  <canvas id="goldMarketCanvas" class="gold-market-canvas"></canvas>
-
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
   <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -154,6 +151,10 @@
         <button id="btnStartTour" class="btn-ctrl btn-tour" title="Take a 30-Second Guided Tour of the Quantitative Terminal">
           <i data-lucide="sparkles" class="btn-icon gold-glow"></i>
           <span>Tour Terminal</span>
+        </button>
+        <button id="btnOpenWsModal" class="btn-ctrl btn-ws" title="Configure Live MCX WebSocket Feed (Zerodha Kite / Dhan)">
+          <i data-lucide="radio"></i>
+          <span id="wsBtnStatusText">MCX WebSocket</span>
         </button>
         <button id="btnAudioToggle" class="btn-ctrl btn-audio active" title="Toggle Real-Time Audio Chime Alerts">
           <i data-lucide="volume-2" id="audioIcon"></i>
@@ -205,13 +206,25 @@
         <span class="inst-unit">/ 1g</span>
         <span class="inst-tag">999 Fine</span>
       </div>
+      <div class="ticker-instrument" id="tickerSILVER">
+        <span class="inst-sym">SILVER</span>
+        <span class="inst-price" id="tickValSILVER">₹88,400</span>
+        <span class="inst-unit">/ 1kg</span>
+        <span class="inst-tag">30kg Lot</span>
+      </div>
+      <div class="ticker-instrument" id="tickerCRUDEOIL">
+        <span class="inst-sym">CRUDEOIL</span>
+        <span class="inst-price" id="tickValCRUDEOIL">₹6,150</span>
+        <span class="inst-unit">/ bbl</span>
+        <span class="inst-tag">100 bbl</span>
+      </div>
       <div class="ticker-instrument stat-pill">
         <span class="stat-lbl">Repo Carry (r):</span>
         <span class="stat-num">6.50%</span>
       </div>
       <div class="ticker-instrument stat-pill">
-        <span class="stat-lbl">Purity Wedge:</span>
-        <span class="stat-num">0.402%</span>
+        <span class="stat-lbl">Session Hours:</span>
+        <span class="stat-num green">09:00 - 23:30 IST</span>
       </div>
       <div class="ticker-instrument stat-pill">
         <span class="stat-lbl">Execution:</span>
@@ -293,10 +306,20 @@
           <div class="market-pair-picker">
             <label for="pairSelect">Active Trading Pair:</label>
             <select id="pairSelect" class="form-control-compact">
-              <option value="GOLDM_GOLDTEN">GOLDM (100g) vs GOLDTEN (10g)</option>
-              <option value="GOLDTEN_GOLDPETAL">GOLDTEN (10g) vs GOLDPETAL (1g)</option>
-              <option value="GOLDM_GOLDGUINEA">GOLDM (100g) vs GOLDGUINEA (8g)</option>
-              <option value="GOLDGUINEA_GOLDPETAL">GOLDGUINEA (8g) vs GOLDPETAL (1g)</option>
+              <optgroup label="🟡 MCX Gold Arbitrage Pairs">
+                <option value="GOLDM_GOLDTEN" selected>GOLDM (100g) vs GOLDTEN (10g)</option>
+                <option value="GOLDTEN_GOLDPETAL">GOLDTEN (10g) vs GOLDPETAL (1g)</option>
+                <option value="GOLDM_GOLDGUINEA">GOLDM (100g) vs GOLDGUINEA (8g)</option>
+                <option value="GOLDGUINEA_GOLDPETAL">GOLDGUINEA (8g) vs GOLDPETAL (1g)</option>
+              </optgroup>
+              <optgroup label="⚪ MCX Silver Arbitrage Pairs">
+                <option value="SILVER_SILVERM">SILVER (30kg) vs SILVERM (5kg)</option>
+                <option value="SILVERM_SILVERMIC">SILVERM (5kg) vs SILVERMIC (1kg)</option>
+                <option value="SILVER_SILVERMIC">SILVER (30kg) vs SILVERMIC (1kg)</option>
+              </optgroup>
+              <optgroup label="⚫ MCX Crude Oil Arbitrage Pairs">
+                <option value="CRUDEOIL_CRUDEOILM">CRUDEOIL (100 bbl) vs CRUDEOILM (10 bbl)</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -803,6 +826,88 @@
                     <td><strong>₹7,315.00 / g</strong></td>
                     <td><span class="status-chip neutral">MONITOR</span></td>
                   </tr>
+
+                  <!-- MCX Silver Contracts -->
+                  <tr class="contract-card" data-contract="SILVER">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>SILVER</strong>
+                        <small>Silver Standard</small>
+                      </div>
+                    </td>
+                    <td>1kg</td>
+                    <td><strong>30kg</strong></td>
+                    <td><span class="purity-badge silver">999 Fine</span></td>
+                    <td>05th (Early)</td>
+                    <td><span class="cell-price" id="price_SILVER">₹88,400</span></td>
+                    <td><strong>₹88.40 / g</strong></td>
+                    <td><span class="status-chip long">LONG SPREAD</span></td>
+                  </tr>
+
+                  <tr class="contract-card" data-contract="SILVERM">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>SILVERM</strong>
+                        <small>Silver Mini</small>
+                      </div>
+                    </td>
+                    <td>1kg</td>
+                    <td><strong>5kg</strong></td>
+                    <td><span class="purity-badge silver">999 Fine</span></td>
+                    <td>28th (Late)</td>
+                    <td><span class="cell-price" id="price_SILVERM">₹88,950</span></td>
+                    <td><strong>₹88.95 / g</strong></td>
+                    <td><span class="status-chip short">SHORT SPREAD</span></td>
+                  </tr>
+
+                  <tr class="contract-card" data-contract="SILVERMIC">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>SILVERMIC</strong>
+                        <small>Silver Micro</small>
+                      </div>
+                    </td>
+                    <td>1kg</td>
+                    <td><strong>1kg</strong></td>
+                    <td><span class="purity-badge silver">999 Fine</span></td>
+                    <td>28th (Late)</td>
+                    <td><span class="cell-price" id="price_SILVERMIC">₹89,400</span></td>
+                    <td><strong>₹89.40 / g</strong></td>
+                    <td><span class="status-chip neutral">MONITOR</span></td>
+                  </tr>
+
+                  <!-- MCX Crude Oil Contracts -->
+                  <tr class="contract-card" data-contract="CRUDEOIL">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>CRUDEOIL</strong>
+                        <small>Crude Standard</small>
+                      </div>
+                    </td>
+                    <td>1 bbl</td>
+                    <td><strong>100 bbl</strong></td>
+                    <td><span class="purity-badge crude">WTI Grade</span></td>
+                    <td>19th (Monthly)</td>
+                    <td><span class="cell-price" id="price_CRUDEOIL">₹6,150</span></td>
+                    <td><strong>₹6,150 / bbl</strong></td>
+                    <td><span class="status-chip long">LONG SPREAD</span></td>
+                  </tr>
+
+                  <tr class="contract-card" data-contract="CRUDEOILM">
+                    <td>
+                      <div class="contract-name-cell">
+                        <strong>CRUDEOILM</strong>
+                        <small>Crude Mini</small>
+                      </div>
+                    </td>
+                    <td>1 bbl</td>
+                    <td><strong>10 bbl</strong></td>
+                    <td><span class="purity-badge crude">WTI Grade</span></td>
+                    <td>19th (Monthly)</td>
+                    <td><span class="cell-price" id="price_CRUDEOILM">₹6,185</span></td>
+                    <td><strong>₹6,185 / bbl</strong></td>
+                    <td><span class="status-chip short">SHORT SPREAD</span></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -1181,14 +1286,109 @@
           </div>
           <pre id="modalBrokerJsonCode"><code>// Generated live by Quant Engine</code></pre>
         </div>
+        <!-- Authenticated Algo Execution Webhook Bridge -->
+        <div class="webhook-bridge-container">
+          <div class="webhook-bridge-head">
+            <span><i data-lucide="send"></i> Direct Algo Execution Webhook Bridge</span>
+            <span class="badge-hint" id="webhookStatusBadge">Ready to Dispatch</span>
+          </div>
+          <div class="webhook-inputs-row">
+            <div>
+              <label style="font-size:0.68rem; color:var(--text-muted); display:block; margin-bottom:3px;">Webhook Endpoint URL:</label>
+              <input type="text" id="webhookUrlInput" class="form-control-compact font-mono" value="https://algo.quantbridge.trade/v1/orders/mcx-spread" placeholder="https://your-algo-bridge.com/webhook" />
+            </div>
+            <div>
+              <label style="font-size:0.68rem; color:var(--text-muted); display:block; margin-bottom:3px;">Bearer Token / Secret:</label>
+              <input type="password" id="webhookAuthInput" class="form-control-compact font-mono" value="sk_live_quant_mcx_7782" placeholder="Bearer Token" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn-ctrl btn-secondary" id="btnCopyBrokerJson">
           <i data-lucide="copy"></i> Copy Zerodha / Dhan JSON
         </button>
+        <button type="button" class="btn-ctrl btn-webhook-fire" id="btnTriggerWebhook">
+          <i data-lucide="send"></i> ⚡ Dispatch Live Webhook
+        </button>
         <button type="button" class="btn-ctrl btn-primary" id="btnSimulateFill">
           <i data-lucide="zap"></i> Simulate 1-Click Instant Execution
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live MCX WebSocket Gateway & Stream Controller Modal -->
+  <div id="wsGatewayModal" class="terminal-modal-overlay">
+    <div class="terminal-modal-card ws-modal-card">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="panel-tag"><i data-lucide="radio"></i> LIVE MCX WEBSOCKET STREAM GATEWAY</div>
+          <h3>Institutional Tick Stream Controller</h3>
+        </div>
+        <button type="button" class="btn-modal-close" id="btnCloseWsModal" title="Close WebSocket Controller">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="ws-timing-banner">
+          <div>
+            <span>Exchange Session: </span>
+            <strong class="green">MCX Active (09:00 - 23:30 IST)</strong>
+          </div>
+          <div>
+            <span>Protocol: </span>
+            <strong class="gold">WSS / Binary Tick Stream</strong>
+          </div>
+        </div>
+
+        <div class="ws-telemetry-metrics">
+          <div class="ws-metric-box">
+            <div class="ws-lbl">Connection State</div>
+            <div class="ws-val green" id="wsMetricState">CONNECTED</div>
+          </div>
+          <div class="ws-metric-box">
+            <div class="ws-lbl">Tick Rate</div>
+            <div class="ws-val" id="wsMetricRate">18.4 Ticks/s</div>
+          </div>
+          <div class="ws-metric-box">
+            <div class="ws-lbl">Socket Latency</div>
+            <div class="ws-val gold" id="wsMetricLatency">18ms</div>
+          </div>
+        </div>
+
+        <div class="ws-config-grid">
+          <div>
+            <label style="font-size:0.70rem; color:var(--text-muted); display:block; margin-bottom:4px;">WebSocket Feed Provider:</label>
+            <select id="wsProviderSelect" class="form-control-compact">
+              <option value="kite">Zerodha Kite Connect WSS (wss://ws.kite.trade)</option>
+              <option value="dhan">Dhan Market Feed WSS (wss://api-feed.dhan.co)</option>
+              <option value="simulated" selected>MCX FastStream Low-Latency Institutional Gateway</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.70rem; color:var(--text-muted); display:block; margin-bottom:4px;">API Key / Auth Token:</label>
+            <input type="password" id="wsApiKeyInput" class="form-control-compact font-mono" value="mcx_live_sec_9941x" placeholder="API Key" />
+          </div>
+        </div>
+
+        <div class="broker-json-preview" style="margin-top:8px;">
+          <div class="preview-head">
+            <span>Subscribed Instrument Tokens (Gold, Silver, Crude Oil):</span>
+          </div>
+          <pre id="wsLogPreview"><code>[WSS CONNECTED] Listening on MCX Gold (256265, 256266), Silver (257101, 257102), Crude (258001)...
+[TICK LIVE] GOLDM26OCT: ₹72,452 | Vol: 1,842 | Depth Bid/Ask: 72450/72455
+[TICK LIVE] SILVER26DEC: ₹88,410 | Vol: 4,210 | Depth Bid/Ask: 88400/88420
+[TICK LIVE] CRUDEOIL26OCT: ₹6,152 | Vol: 9,840 | Depth Bid/Ask: 6150/6155</code></pre>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-ctrl btn-secondary" id="btnWsReconnect">
+          <i data-lucide="refresh-cw"></i> Reconnect Gateway
+        </button>
+        <button type="button" class="btn-ctrl btn-primary" id="btnWsToggleStream">
+          <i data-lucide="radio"></i> Stream Active (Pause/Resume)
         </button>
       </div>
     </div>
@@ -1240,7 +1440,6 @@
   </div>
 
   <!-- Scripts -->
-  <script src="gold-3d-background.js?v=2.4"></script>
-  <script src="app.js?v=2.4"></script>
+  <script src="app.js?v=2.2"></script>
 </body>
 </html>
